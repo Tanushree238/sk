@@ -7,15 +7,15 @@ from time import time
 import os
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy import func,text
+from flask_login import UserMixin
 
-
-class User(db.Model):
+class User(db.Model, UserMixin):
 
 	id = db.Column( db.Integer, primary_key=True )
 	name = db.Column( db.String(100), nullable=False )
 	contact = db.Column( db.BigInteger, unique=True, nullable=False)
 	email = db.Column( db.String(40), nullable=False, unique=True )
-	password = db.Column( db.String(255), nullable=False )
+	password = db.Column( db.String(255) )
 
 	user_roles = db.relationship('UserRole', backref="user", lazy="dynamic", cascade="save-update, delete")
 
@@ -23,7 +23,7 @@ class User(db.Model):
 	updated_on = db.Column( db.DateTime, onupdate = datetime.now )
 
 	def get_roles(self):
-		roles = {}
+		roles = set()
 		for user_role_obj in self.user_roles.all():
 			roles.add(user_role_obj.role.name)
 		return roles
@@ -32,7 +32,7 @@ class User(db.Model):
 		self.password = generate_password_hash(password)
 
 	def check_password( self,password ):
-		return check_password_hash( self.password_hash, password ) 
+		return check_password_hash( self.password, password ) 
 
 	def __repr__(self):
 		return self.name
@@ -88,7 +88,7 @@ class DeliveryPersonDetails(db.Model):
 	pin_code = db.Column( db.String(6), nullable=False )
 	aadhar_number = db.Column( db.BigInteger, unique=True, nullable=False)
 	status = db.Column( db.String(255), nullable=False , default="Available")
-	
+
 	created_on = db.Column( db.DateTime, default=datetime.now )
 	updated_on = db.Column( db.DateTime, onupdate = datetime.now )
 
@@ -169,6 +169,7 @@ class TenderProductMapper(db.Model):
 
 	created_on = db.Column( db.DateTime, default=datetime.now )
 	updated_on = db.Column( db.DateTime, onupdate = datetime.now )
+
 
 class TenderPickup(db.Model):
 
