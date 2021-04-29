@@ -15,7 +15,7 @@ class User(db.Model):
 	name = db.Column( db.String(100), nullable=False )
 	contact = db.Column( db.BigInteger, unique=True, nullable=False)
 	email = db.Column( db.String(40), nullable=False, unique=True )
-	password = db.Column( db.String(255), nullable=False )
+	password = db.Column( db.String(255) )
 
 	user_roles = db.relationship('UserRole', backref="user", lazy="dynamic", cascade="save-update, delete")
 
@@ -25,6 +25,11 @@ class User(db.Model):
 	def __repr__(self):
 		return self.name
 
+	def set_password(self,password):
+		self.password_hash = generate_password_hash(password)
+
+	def check_password( self,password ):
+		return check_password_hash( self.password_hash, password ) 
 	
 class Role(db.Model):
 
@@ -76,7 +81,7 @@ class DeliveryPersonDetails(db.Model):
 	pin_code = db.Column( db.String(6), nullable=False )
 	aadhar_number = db.Column( db.BigInteger, unique=True, nullable=False)
 	status = db.Column( db.String(255), nullable=False , default="Available")
-	
+
 	created_on = db.Column( db.DateTime, default=datetime.now )
 	updated_on = db.Column( db.DateTime, onupdate = datetime.now )
 
@@ -139,7 +144,7 @@ class Tender(db.Model):
 	# Draft/Request/Rejected/Approved/Assigned/Recieved/Completed/Returned
 	status_updated_on = db.Column( db.DateTime)
 
-	products = db.relationship('TenderProductMapper', backref="product", lazy="dynamic", cascade="save-update, delete")
+	products = db.relationship('TenderProductMapper', backref="tender_obj", lazy="dynamic", cascade="save-update, delete")
 
 	created_on = db.Column( db.DateTime, default=datetime.now )
 	updated_on = db.Column( db.DateTime, onupdate = datetime.now )
@@ -148,6 +153,7 @@ class Tender(db.Model):
 class TenderProductMapper(db.Model):
 
 	id = db.Column( db.Integer, primary_key=True )
+	tender_id = db.Column( db.Integer, db.ForeignKey('tender.id') )
 	product_id = db.Column( db.Integer, db.ForeignKey('product.id') )
 	quantity = db.Column( db.Integer )
 	product_price = db.Column( db.Integer )
@@ -156,6 +162,7 @@ class TenderProductMapper(db.Model):
 
 	created_on = db.Column( db.DateTime, default=datetime.now )
 	updated_on = db.Column( db.DateTime, onupdate = datetime.now )
+
 
 class TenderPickup(db.Model):
 
