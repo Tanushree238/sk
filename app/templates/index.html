@@ -8,13 +8,13 @@
 {% block content%}
     <div class="d-flex flex-column pt-5 mt-5 align-items-center">
         <h2>Sign In</h2>
-        <form class="col-md-3">
+        <form action="" class="col-md-3" method="POST">
             <label>Email</label>
             <input type="text" name="email" id="email" class="form-control mb-3">
             <label>Password</label>
             <input type="password" name="password" id="password" class="form-control mb-2">
             <p id="error" class="text-danger small pt-2"></p>
-            <button type="button" id="submit_btn" class="btn btn-success btn-block mb-3" style="font-size: 17px;">Continue</button>
+            <button type="submit" id="submit_btn" class="btn btn-success btn-block mb-3" style="font-size: 17px;">Continue</button>
         </form>
         <div class="col-md-3 row">
             <div class="col-md-3 px-0 py-1">

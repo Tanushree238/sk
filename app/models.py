@@ -1,4 +1,4 @@
-from app import app,db 
+from app import app, db, login_manager
 from sqlalchemy.orm import backref
 from datetime import datetime
 from time import time
@@ -7,9 +7,9 @@ from time import time
 import os
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy import func,text
+from flask_login import UserMixin
 
-
-class User(db.Model):
+class User(db.Model, UserMixin):
 
 	id = db.Column( db.Integer, primary_key=True )
 	name = db.Column( db.String(100), nullable=False )
@@ -21,15 +21,22 @@ class User(db.Model):
 
 	created_on = db.Column( db.DateTime, default=datetime.now )
 	updated_on = db.Column( db.DateTime, onupdate = datetime.now )
- 
+
+	def get_roles(self):
+		roles = set()
+		for user_role_obj in self.user_roles.all():
+			roles.add(user_role_obj.role.name)
+		return roles
+
+	def set_password(self,password):
+		self.password = generate_password_hash(password)
+
+	def check_password( self,password ):
+		return check_password_hash( self.password, password ) 
+
 	def __repr__(self):
 		return self.name
 
-	def set_password(self,password):
-		self.password_hash = generate_password_hash(password)
-
-	def check_password( self,password ):
-		return check_password_hash( self.password_hash, password ) 
 	
 class Role(db.Model):
 
@@ -221,3 +228,9 @@ class Transactions(db.Model):
 
 	created_on = db.Column( db.DateTime, default=datetime.now )
 	updated_on = db.Column( db.DateTime, onupdate = datetime.now )
+
+
+
+@login_manager.user_loader
+def load_user(id):
+	return User.query.get(id)
