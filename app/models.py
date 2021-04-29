@@ -151,7 +151,7 @@ class Tender(db.Model):
 	# Draft/Request/Rejected/Approved/Assigned/Recieved/Completed/Returned
 	status_updated_on = db.Column( db.DateTime)
 
-	products = db.relationship('TenderProductMapper', backref="tender", lazy="dynamic", cascade="save-update, delete")
+	products = db.relationship('TenderProductMapper', backref="tender_obj", lazy="dynamic", cascade="save-update, delete")
 
 	created_on = db.Column( db.DateTime, default=datetime.now )
 	updated_on = db.Column( db.DateTime, onupdate = datetime.now )
