@@ -75,7 +75,8 @@ class DeliveryPersonDetails(db.Model):
 	state = db.Column( db.String(255), nullable=False )
 	pin_code = db.Column( db.String(6), nullable=False )
 	aadhar_number = db.Column( db.BigInteger, unique=True, nullable=False)
-
+	status = db.Column( db.String(255), nullable=False , default="Available")
+	
 	created_on = db.Column( db.DateTime, default=datetime.now )
 	updated_on = db.Column( db.DateTime, onupdate = datetime.now )
 
@@ -128,50 +129,88 @@ class ProductImage(db.Model):
 
 class Tender(db.Model):
 
-
 	id = db.Column( db.Integer, primary_key=True )
-	user_id = db.Column( db.Integer, db.ForeignKey('user.id') )
-    Products (rel) 
-    total_amount = db.Column(db.Integer)
-    advance_amount = db.Column(db.Integer)
-    paid_amount = db.Column(db.Integer)
-    pickup_date = db.Column( db.DateTime ) 
-	status = db.Column( db.String(200), nullable=False, default = Draft)
+	merchant_id = db.Column( db.Integer, db.ForeignKey('user.id') )
+	total_amount = db.Column(db.Integer)
+	advance_amount = db.Column(db.Integer)
+	paid_amount = db.Column(db.Integer)
+	pickup_date = db.Column( db.DateTime ) 
+	status = db.Column( db.String(200), nullable=False, default = "Draft")
+	# Draft/Request/Rejected/Approved/Assigned/Recieved/Completed/Returned
 	status_updated_on = db.Column( db.DateTime)
+
+	products = db.relationship('TenderProductMapper', backref="product", lazy="dynamic", cascade="save-update, delete")
 
 	created_on = db.Column( db.DateTime, default=datetime.now )
 	updated_on = db.Column( db.DateTime, onupdate = datetime.now )
   
-TenderProductMapper
-    Pid
-    Quantity 
-    Price of 1 Prod
-    TotalAmount
-    Adv percentage 
 
-TenderPickup 
-    Uid 
-    Tid
-    Status 
+class TenderProductMapper(db.Model):
 
-TenderPickupFailed
-    Uid
-    Tid
-    Reason
+	id = db.Column( db.Integer, primary_key=True )
+	product_id = db.Column( db.Integer, db.ForeignKey('product.id') )
+	quantity = db.Column( db.Integer )
+	product_price = db.Column( db.Integer )
+	total_amount = db.Column( db.Integer )
+	advance_percentage = db.Column( db.Integer )
 
-TenderStatusLogs
-    Tid
-    Status
-    StatusUpdatedOn
-    UpdatedBy (Admin - Uid)
- 
-Transactions
-    MId
-    Tid
-    TransType 
-    Amount
-    Mode
-    Mode Desc
-    Payment Date
-    Desc
-    GST P
+	created_on = db.Column( db.DateTime, default=datetime.now )
+	updated_on = db.Column( db.DateTime, onupdate = datetime.now )
+
+class TenderPickup(db.Model):
+
+	id =  db.Column( db.Integer, primary_key=True )
+	delivery_person_id = db.Column( db.Integer, db.ForeignKey('user.id') )
+	tender_id = db.Column( db.Integer, db.ForeignKey('tender.id') )
+	status = db.Column( db.String(200), nullable=False, default = "Assigned" )
+	# Assigned/Initated/PickedUp/Delievered
+	created_on = db.Column( db.DateTime, default=datetime.now )
+	updated_on = db.Column( db.DateTime, onupdate = datetime.now )
+
+
+class TenderPickupFailed(db.Model):
+	
+	id =  db.Column( db.Integer, primary_key=True )
+	delivery_person_id = db.Column( db.Integer, db.ForeignKey('user.id') )
+	tender_id = db.Column( db.Integer, db.ForeignKey('tender.id') )
+	reason = db.Column( db.String(200), nullable=False)
+
+	created_on = db.Column( db.DateTime, default=datetime.now )
+	updated_on = db.Column( db.DateTime, onupdate = datetime.now )
+
+
+class TenderStatusLogs(db.Model):
+
+	id =  db.Column( db.Integer, primary_key=True )
+	tender_id = db.Column( db.Integer, db.ForeignKey('tender.id') )
+	status_updated_on = db.Column( db.DateTime, default = datetime.now )
+	updated_by = db.Column( db.Integer, db.ForeignKey('user.id') )
+
+	created_on = db.Column( db.DateTime, default=datetime.now )
+	updated_on = db.Column( db.DateTime, onupdate = datetime.now )
+
+class TenderPickupStatusLogs(db.Model):
+
+	id =  db.Column( db.Integer, primary_key=True )
+	tender_pickup_id = db.Column( db.Integer, db.ForeignKey('tender_pickup.id') )
+	status_updated_on = db.Column( db.DateTime, default = datetime.now )
+	updated_by = db.Column( db.Integer, db.ForeignKey('user.id') )
+
+	created_on = db.Column( db.DateTime, default=datetime.now )
+	updated_on = db.Column( db.DateTime, onupdate = datetime.now )
+
+class Transactions(db.Model):
+
+	id =  db.Column( db.Integer, primary_key=True )
+	tender_id = db.Column( db.Integer, db.ForeignKey('tender.id') )
+	merchant_id = db.Column( db.Integer, db.ForeignKey('user.id') )
+	transaction_type = db.Column( db.String(1), nullable=False)
+	amount = db.Column( db.BigInteger, nullable=False)
+	mode = db.Column( db.String(200), nullable=False)
+	mode_description = db.Column( db.String(200), nullable=False)
+	payment_date =  db.Column( db.DateTime, nullable=False )
+	description = db.Column( db.String(200), nullable=False)
+	gst_percentage = db.Column( db.Integer, nullable=False )
+
+	created_on = db.Column( db.DateTime, default=datetime.now )
+	updated_on = db.Column( db.DateTime, onupdate = datetime.now )
