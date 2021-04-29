@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block css %}
+<style>
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex flex-column pt-5 mt-5 align-items-center">
+        <h2>Sign In</h2>
+        <form class="col-md-5" method="POST">
+            <label>Username</label>
+            <input type="text" name="username" id="username" class="form-control mb-3">
+            <label>Password</label>
+            <input type="password" name="password" id="password" class="form-control">
+            <p id="error" class="text-danger small pt-2"></p>
+            <button type="submit" id="submit_btn" class="btn btn-success btn-block mb-3" style="font-size: 17px;">Sign In</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+
+</script>
+{% endblock %}

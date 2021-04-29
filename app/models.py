@@ -1,4 +1,4 @@
-from app import app,db 
+from app import app, db, login_manager
 from sqlalchemy.orm import backref
 from datetime import datetime
 from time import time
@@ -21,7 +21,19 @@ class User(db.Model):
 
 	created_on = db.Column( db.DateTime, default=datetime.now )
 	updated_on = db.Column( db.DateTime, onupdate = datetime.now )
- 
+
+	def get_roles(self):
+		roles = {}
+		for user_role_obj in self.user_roles.all():
+			roles.add(user_role_obj.role.name)
+		return roles
+
+	def set_password(self,password):
+		self.password = generate_password_hash(password)
+
+	def check_password( self,password ):
+		return check_password_hash( self.password_hash, password ) 
+
 	def __repr__(self):
 		return self.name
 
@@ -139,7 +151,7 @@ class Tender(db.Model):
 	# Draft/Request/Rejected/Approved/Assigned/Recieved/Completed/Returned
 	status_updated_on = db.Column( db.DateTime)
 
-	products = db.relationship('TenderProductMapper', backref="product", lazy="dynamic", cascade="save-update, delete")
+	products = db.relationship('TenderProductMapper', backref="tender", lazy="dynamic", cascade="save-update, delete")
 
 	created_on = db.Column( db.DateTime, default=datetime.now )
 	updated_on = db.Column( db.DateTime, onupdate = datetime.now )
@@ -148,6 +160,7 @@ class Tender(db.Model):
 class TenderProductMapper(db.Model):
 
 	id = db.Column( db.Integer, primary_key=True )
+	tender_id = db.Column( db.Integer, db.ForeignKey('tender.id') )
 	product_id = db.Column( db.Integer, db.ForeignKey('product.id') )
 	quantity = db.Column( db.Integer )
 	product_price = db.Column( db.Integer )
@@ -214,3 +227,9 @@ class Transactions(db.Model):
 
 	created_on = db.Column( db.DateTime, default=datetime.now )
 	updated_on = db.Column( db.DateTime, onupdate = datetime.now )
+
+
+
+@login_manager.user_loader
+def load_user(id):
+	return User.query.get(id)
