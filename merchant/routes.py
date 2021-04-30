@@ -1,11 +1,19 @@
 from flask import redirect,render_template,url_for, jsonify, request,flash,session
 from merchant import merchant
-from flask_login import login_required, current_user
+from flask_login import login_required, current_user, logout_user
 from app.decorators import *
 from app.models import *
 
 
 role_name = "Merchant"
+
+
+@merchant.route('/logout', methods=["GET", "POST"], endpoint="logout")
+@login_required
+@check_role(role_name)
+def logout():
+	logout_user()
+	return redirect(url_for('login'))
 
 
 @merchant.route('/', methods=["GET", "POST"], endpoint="dashboard")
@@ -42,12 +50,11 @@ def merchant_home():
 	return render_template("merchant_dashboard.html")
 
 
-
 @merchant.route('/tender_drafts', methods=["GET", "POST"], endpoint="drafts")
 @login_required
 @check_role(role_name)
 def drafts():
-	tender_drafts = Tender.query.filter_by(merchant_id=current_user.id, status="Draft").all()
+	tender_drafts = Tender.query.filter_by(merchant_id=current_user.id, status="Drafted").all()
 	tender_drafts = list(enumerate(tender_drafts,1))
 	product_categories = db.session.query(ProductCategory.id, ProductCategory.name).all()
 	if request.method == "POST":
@@ -99,6 +106,7 @@ def fetch_products():
 
 		return jsonify({"product_list":product_data})
 
+
 @merchant.route("/delete_tender", methods=["POST"], endpoint="delete_tender")
 @login_required
 @check_role(role_name)
@@ -110,7 +118,6 @@ def delete_tender():
 		db.session.delete(tender_obj)
 		db.session.commit()
 		return jsonify({"status":"success"})
-
 
 
 @merchant.route("/request_tender", methods=["POST"], endpoint="request_tender")
@@ -127,7 +134,6 @@ def request_tender():
 		return jsonify({"status":"success"})
 
 
-
 @merchant.route('/tender_requests', methods=["GET", "POST"], endpoint="requests")
 @login_required
 @check_role(role_name)
@@ -135,7 +141,6 @@ def requests():
 	tender_requests = Tender.query.filter_by(merchant_id=current_user.id, status="Requested").all()
 	tender_requests = list(enumerate(tender_requests,1))
 	return render_template("requests.html", tender_requests=tender_requests)
-
 
 
 @merchant.route('/tenders', methods=["GET", "POST"], endpoint="tenders")

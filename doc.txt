@@ -19,11 +19,5 @@ else:
 
 
 
-
-
-
-
-
-
 Delievery 
     tender assign 

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>SK</title>
+        <title>Tamani - Stock Keeper</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
@@ -101,7 +101,7 @@
         <div class="d-flex">
             <div class="">
                 <div id="mySidenav" class="sidenav">
-                    <h2>Stock Keeping</h2>
+                    <h2><img src="{{ url_for('static', filename='Tamani Logo.png') }}"></h2>
                     <h5 class="px-2 mt-5 mb-3"><i class="fa fa-user-o pr-2 user_icon" aria-hidden="true">&nbsp;{{ current_user.name }}</i></h5>
                     <a href="{{ url_for('admin.dashboard') }}"><i class="fa fa-desktop pr-2" aria-hidden="true"></i>Dashboard</a>
                     
