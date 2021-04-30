@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "admin_base.html" %}
 
 {% block css %}
 <style>
@@ -12,7 +12,7 @@
         <h2>Sign In</h2>
         <form class="col-md-5" method="POST">
             <label>Username</label>
-            <input type="text" name="username" id="username" class="form-control mb-3">
+            <input type="email" name="email" id="email" class="form-control mb-3">
             <label>Password</label>
             <input type="password" name="password" id="password" class="form-control">
             <p id="error" class="text-danger small pt-2"></p>

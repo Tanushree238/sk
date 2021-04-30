@@ -1,0 +1,106 @@
+{% extends "admin_main_base.html" %}
+
+{% block css %}
+<style>
+    td, td{
+        vertical-align: middle !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="d-none" id="urls">
+    <span class="delete_delivery_person">{{ url_for('admin.delete_delivery_person') }}</span>
+</div>
+
+<div class="container p-3 my-4">
+    <div class="d-flex justify-content-between my-2">
+        <h4 class="my-2">Delivery Person</h4>
+        <a href="{{ url_for('admin.add_delivery_person') }}" class='btn btn-outline-primary'><i class="fa fa-plus" aria-hidden="true"></i>&nbsp;&nbsp;Add Delivery Person</a>
+    </div>
+
+    <div class="my-4">
+        {% if delivery_persons %}
+        <table class="table text-center">
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Contact</th>
+                <th>Address</th>
+                <th>Status</th>
+                <th></th>
+            </tr>
+            {% for delivery_person in delivery_persons %}
+            <tr>
+                <td class="d-none id">{{ delivery_person.id }}</td>
+                <td class="name">{{ delivery_person.user.name }}</td>
+                <td>{{ delivery_person.user.email }}</td>
+                <td>{{ delivery_person.user.contact }}</td>
+                <td>{{ delivery_person.address }} {{ delivery_person.city }}, {{ delivery_person.state }}, {{ delivery_person.pin_code }}</td>
+                {% if delivery_person.status=="Available" %}
+                    <td class="text-success">{{ delivery_person.status }}</td>
+                {% else %}
+                    <td class="text-danger">{{ delivery_person.status }}</td>
+                {% endif %}
+                <td>
+                    <a href="{{ url_for('admin.edit_delivery_person', delivery_person_id=delivery_person.id) }}" class="btn text-secondary edit"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
+                    <button class="btn text-danger delete"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+        <hr>
+        <div class="my-5 text-center">
+            <img src="{{ url_for('admin.static', filename='box.svg') }}" style="width: 100px; height: 100px;">
+            <h4 class="my-3" style="font-size: 20px;">No Records Found</h4>
+        </div>
+        {% endif %}
+        
+    </div>
+</div>
+
+<div class="modal" tabindex="-1" role="dialog" id="confirmation_modal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="border-radius: 30px;">
+            <div class="modal-body text-center">
+                <img src="{{ url_for('admin.static', filename='confirmation.jpg') }}" class="img-fluid" style="width: 150px; height: 150px;">
+                <span class="delivery_person_id d-none"></span>
+                <p class="mt-1 mb-4" style="font-size: 15px;">Are you sure you want to delete Delivery Person <b><span class='name'></span></b>?</p>
+                <div class="mx-3 mb-2">
+                    <button type="button" class="btn btn-success ml-auto mr-3 delete_delivery_person"><i class="fa fa-check" aria-hidden="true"></i>&nbsp;Yes</button>
+                    <button type="button" class="btn btn-danger mr-auto" data-dismiss="modal"><i class="fa fa-times" aria-hidden="true"></i>&nbsp;No</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+    $(document).ready(function(){
+        $(document).on("click", ".delete", function(){
+            let delivery_person_id = $(this).parent().parent().find(".id").text();
+            let delivery_person_name = $(this).parent().parent().find(".name").text();
+            $("#confirmation_modal .name").text(delivery_person_name);
+            $("#confirmation_modal .delivery_person_id").text(delivery_person_id);
+            $("#confirmation_modal").modal("show")
+        })
+
+        $(document).on("click", "#confirmation_modal .delete_delivery_person", function(){
+            let delivery_person_id = $("#confirmation_modal .delivery_person_id").text();
+            console.log(delivery_person_id)
+            $.ajax({
+                type: "POST",
+                url : $("#urls span.delete_delivery_person").text(),
+                data: { delivery_person_id: delivery_person_id }
+            }).then((response)=>{
+                if(response.status){
+                    window.location.reload();
+                }
+            })
+        });
+    })
+</script>
+{% endblock %}

@@ -1,4 +1,4 @@
-from app import app, db, login_manager
+from app import db, login_manager
 from sqlalchemy.orm import backref
 from datetime import datetime
 from time import time
@@ -18,6 +18,8 @@ class User(db.Model, UserMixin):
 	password = db.Column( db.String(255) )
 
 	user_roles = db.relationship('UserRole', backref="user", lazy="dynamic", cascade="save-update, delete")
+	delivery_persons = db.relationship('DeliveryPersonDetails', backref="user", lazy="dynamic", cascade="save-update, delete")
+	merchants = db.relationship('MerchantCompanyDetails', backref="user", lazy="dynamic", cascade="save-update, delete")
 
 	created_on = db.Column( db.DateTime, default=datetime.now )
 	updated_on = db.Column( db.DateTime, onupdate = datetime.now )
