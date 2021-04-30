@@ -1,5 +1,5 @@
 from flask import Blueprint
 
-merchant = Blueprint("merchant", __name__, url_prefix='/merchant')
+merchant = Blueprint("merchant", __name__, url_prefix='/merchant', template_folder='templates')
 
-from . import routes
+from merchant import routes

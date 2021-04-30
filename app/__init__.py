@@ -2,9 +2,6 @@ from flask import Flask, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from config import Config
-from admin import admin
-from merchant import merchant
-from delivery import delivery
 from flask_login import LoginManager
 
 app = Flask(__name__)
@@ -23,6 +20,9 @@ login_manager.blueprint_login_views = {
 login_manager.login_message_category = 'info'
 
 from app import routes, models
+from admin import admin
+from merchant import merchant
+from delivery import delivery
 
 app.register_blueprint(admin)
 app.register_blueprint(merchant)

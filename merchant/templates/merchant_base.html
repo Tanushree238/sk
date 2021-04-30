@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Project</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+
+    <script src="https://kit.fontawesome.com/32ee507fe4.js" crossorigin="anonymous"></script>
+
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.0.12/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.12/dist/js/select2.min.js"></script>
+</head>
+<style>
+  .navbar-brand{
+    color: #fff;
+  }
+  .nav-item .nav-link{
+    color: #fafafa ;
+  }
+</style>
+{% block css%}
+{% endblock %}
+<body>
+    <nav class="navbar navbar-expand-lg bg-dark px-5 py-0">
+        <a class="navbar-brand" href="#">Stock Keeper</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav ml-auto mr-5 align-items-center">
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="tender_dropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="small">Transactions</span><br>
+                & Tenders
+              </a>
+              <div class="dropdown-menu" aria-labelledby="tender_dropdown">
+                <a class="dropdown-item" href="{{ url_for('merchant.tenders') }}">All</a>
+                <a class="dropdown-item" href="{{ url_for('merchant.requests') }}">Requested</a>
+                <a class="dropdown-item" href="#">Transactions</a>
+              </div>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="profile_dropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="small">Hey</span><br>
+                {{ current_user.name }}
+              </a>
+              <div class="dropdown-menu" aria-labelledby="profile_dropdown">
+                <a class="dropdown-item" href="#">Your Profile</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="#">Sign Out</a>
+              </div>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('merchant.drafts') }}">
+                <i class="fa fa-shopping-cart" style="font-size: 34px;"></i>
+                Drafts
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    {% block content%}
+    {% endblock %}
+</body>
+{% block js%}
+{% endblock %}
+</html>

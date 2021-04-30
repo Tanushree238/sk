@@ -1,0 +1,29 @@
+Requested - Approve/ Reject 
+if Approved  action - Add Transaction 
+
+Add tran page
+    - Select Tender
+    - advance_amount (text)
+    trans detail from db 
+    submit
+Approved Tender page - Assign delievery (delievery person) 
+Assign - btn
+Initated - text
+Picked Up (Text) & Recieved (btn)
+flash m link for transaction 
+if transaction added - paid amount = total_amount :
+    tender - Completed
+else:
+    btn return tender
+    add refund transaction
+
+
+
+
+
+
+
+
+
+Delievery 
+    tender assign 

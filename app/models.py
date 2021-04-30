@@ -1,4 +1,4 @@
-from app import app, db, login_manager
+from app import db, login_manager
 from sqlalchemy.orm import backref
 from datetime import datetime
 from time import time
@@ -114,29 +114,18 @@ class Product(db.Model):
 	marked_retail_price = db.Column( db.Integer )
 	stock_quantity = db.Column( db.Integer )
 	specifications = db.Column( db.Text )
-	description = db.Column( db.Text )
+	rating = db.Column( db.Float )
+	image = db.Column( db.String(200))
 
 	category_id = db.Column( db.Integer, db.ForeignKey('product_category.id') )
-	product_images = db.relationship('ProductImage', backref="product", lazy="dynamic", cascade="save-update, delete")
+
+	tenders = db.relationship('TenderProductMapper', backref="product_obj", lazy="dynamic", cascade="save-update, delete")
 
 	created_on = db.Column( db.DateTime, default=datetime.now )
 	updated_on = db.Column( db.DateTime, onupdate = datetime.now )
  
 	def __repr__(self):
 		return self.name
-
-
-class ProductImage(db.Model):
-
-	id = db.Column( db.Integer, primary_key=True )
-	product_id = db.Column( db.Integer, db.ForeignKey('product.id') )
-	image = db.Column( db.String(200), nullable=False )
-
-	created_on = db.Column( db.DateTime, default=datetime.now )
-	updated_on = db.Column( db.DateTime, onupdate = datetime.now )
- 
-	def __repr__(self):
-		return self.image
 
 
 class Tender(db.Model):
@@ -146,9 +135,8 @@ class Tender(db.Model):
 	total_amount = db.Column(db.Integer)
 	advance_amount = db.Column(db.Integer)
 	paid_amount = db.Column(db.Integer)
-	pickup_date = db.Column( db.DateTime ) 
-	status = db.Column( db.String(200), nullable=False, default = "Draft")
-	# Draft/Request/Rejected/Approved/Assigned/Recieved/Completed/Returned
+	status = db.Column( db.String(200), nullable=False, default = "Drafted")
+	# Drafted/Requested/Rejected/Approved/Assigned/Recieved/Completed/Returned
 	status_updated_on = db.Column( db.DateTime)
 
 	products = db.relationship('TenderProductMapper', backref="tender_obj", lazy="dynamic", cascade="save-update, delete")
@@ -163,9 +151,7 @@ class TenderProductMapper(db.Model):
 	tender_id = db.Column( db.Integer, db.ForeignKey('tender.id') )
 	product_id = db.Column( db.Integer, db.ForeignKey('product.id') )
 	quantity = db.Column( db.Integer )
-	product_price = db.Column( db.Integer )
 	total_amount = db.Column( db.Integer )
-	advance_percentage = db.Column( db.Integer )
 
 	created_on = db.Column( db.DateTime, default=datetime.now )
 	updated_on = db.Column( db.DateTime, onupdate = datetime.now )
@@ -177,7 +163,7 @@ class TenderPickup(db.Model):
 	delivery_person_id = db.Column( db.Integer, db.ForeignKey('user.id') )
 	tender_id = db.Column( db.Integer, db.ForeignKey('tender.id') )
 	status = db.Column( db.String(200), nullable=False, default = "Assigned" )
-	# Assigned/Initated/PickedUp/Delievered
+	# Assigned/Initated/PickedUp/Delievered 
 	created_on = db.Column( db.DateTime, default=datetime.now )
 	updated_on = db.Column( db.DateTime, onupdate = datetime.now )
 
@@ -217,7 +203,6 @@ class Transactions(db.Model):
 
 	id =  db.Column( db.Integer, primary_key=True )
 	tender_id = db.Column( db.Integer, db.ForeignKey('tender.id') )
-	merchant_id = db.Column( db.Integer, db.ForeignKey('user.id') )
 	transaction_type = db.Column( db.String(1), nullable=False)
 	amount = db.Column( db.BigInteger, nullable=False)
 	mode = db.Column( db.String(200), nullable=False)

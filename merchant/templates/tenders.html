@@ -1,0 +1,77 @@
+{% extends 'merchant_base.html' %}
+
+
+{% block css %}
+<style>
+    .product_img{
+        height: 180px;
+        width: 160px;
+    }
+    .product_name{
+        font-size: 15px;
+    }
+    
+</style>
+{% endblock %}
+{% block content %}
+    <div class="container my-5">
+        {% if tenders %}
+            <div id="accordion" class="my-3">
+                {% for tender in tenders %}
+                <div class="card my-3">
+                    <div class="card-header">
+                        <a class="card-link d-flex justify-content-between" data-toggle="collapse" href="#collapse_{{tender[1].id}}">
+                            <div>
+                                Draft #{{tender[0]}} 
+                            </div>
+                            <p class="mb-0">{{tender[1].status}} On - {{tender[1].status_updated_on.strftime("%d %b %Y")}} </p>
+                        </a>
+                    </div> 
+                    <div id="collapse_{{tender[1].id}}" class="collapse" data-parent="#accordion">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    Total Amount - {{tender[1].total_amount}}<br>
+                                    Advance Amount - {{tender[1].advance_amount}}
+                                </div>
+                                <div class="d-flex">
+                                </div>
+                            </div>
+                            <h6>Products</h6>
+                            <div class="d-flex flex-wrap px-4 justify-content-around">
+                                {% for tender_product in tender[1].products.all() %}
+                                <div class="col-md-3 border p-4 mx-4 my-3">
+                                    <div class=" text-center">
+                                    <img src="{{ url_for('static', filename='product_images/'+tender_product.product_obj.image) }}" class=" product_img">
+                                    </div>
+                                    <p class="product_name pt-2 mb-0">{{tender_product.product_obj.name}}</p>
+                                    {% if tender_product.product_obj.specifications %}
+                                    <p class="small text-muted mb-2">{{tender_product.product_obj.specifications}}</p>
+                                    {% endif %}
+                                    <h5><b>₹{{tender_product.product_obj.marked_retail_price}}</b></h5>
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            {% if tender_product.product_obj.rating %}
+                                            <span class="bg-success small text-light px-2 py-1 rounded">
+                                                {{tender_product.product_obj.rating}} <i class="fa fa-star small"></i>
+                                            </span>
+                                            {% endif %}
+                                        </div>
+                                        <div class="d-flex align-items-center">
+                                            Quantity - {{tender_product.quantity}}
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <hr>
+            <h3 class="text-muted text-center">No Records Found</h3>
+        {% endif %}
+    </div>
+{% endblock %}

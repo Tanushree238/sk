@@ -1,11 +1,13 @@
 from app import app, db
 from flask import redirect,render_template,url_for, jsonify, request,flash,session
 from app.models import *
-from flask_login import login_user, logout_user
+from flask_login import login_user, logout_user, current_user
 
 
 @app.route('/', methods=["GET","POST"])
 def login():
+    if request.method =="GET" and current_user.is_authenticated:
+        return redirect( url_for("merchant.dashboard") )
     if request.method == "POST":
         request_data = request.form
         user_obj = User.query.filter_by(email=request_data["email"]).first()

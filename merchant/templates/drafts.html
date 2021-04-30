@@ -1,0 +1,369 @@
+{% extends 'merchant_base.html' %}
+
+
+{% block css %}
+<style>
+    .product_img{
+        height: 180px;
+        width: 160px;
+    }
+    .product_name{
+        font-size: 15px;
+    }
+    .counter_btn{
+        font-size: 21px;
+        border: 1px solid #757575;
+        cursor: pointer;
+    }
+    .counter{
+        font-size: 21px;
+    }
+    .form-control{
+        font-size: 14px;
+    }
+    @media ( min-width:992px ) {
+        .modal-lg{
+            max-width: 1300px;
+        }
+    }
+    
+</style>
+{% endblock %}
+{% block content %}
+    <div class="d-none">
+        <span id="fetch_products_url">{{ url_for('merchant.fetch_products') }}</span>
+        <span id="delete_tender_url">{{ url_for('merchant.delete_tender') }}</span>
+        <span id="request_tender_url">{{ url_for('merchant.request_tender') }}</span>
+    </div>
+    <div class="container my-5">
+        <button id="create_draft" class="btn btn-outline-primary">Create New Draft</button>
+        {% if tender_drafts %}
+            <div id="accordion" class="my-3">
+                {% for tender in tender_drafts %}
+                <div class="card my-3">
+                    <div class="card-header">
+                        <a class="card-link d-flex justify-content-between" data-toggle="collapse" href="#collapse_{{tender[1].id}}">
+                            <div>
+                                Draft #{{tender[0]}} 
+                            </div>
+                            <p class="mb-0">Created On - {{tender[1].created_on.strftime("%d %b %Y")}} </p>
+                        </a>
+                    </div> 
+                    <div id="collapse_{{tender[1].id}}" class="collapse" data-parent="#accordion">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    Total Amount - {{tender[1].total_amount}}<br>
+                                    Advance Amount - {{tender[1].advance_amount}}
+                                </div>
+                                <div class="d-flex">
+                                    <div class="request_tender_block text-center mx-2">
+                                        <button class="btn btn-outline-success request_tender" id="request_tender_{{tender[1].id}}">Send Tender</button>
+                                    </div>
+                                    <div class="delete_block text-center mx-2">
+                                        <button class="btn btn-outline-danger delete_draft" id="delete_draft_{{tender[1].id}}">Delete Draft</button>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                            <h6>Products</h6>
+                            <div class="d-flex flex-wrap px-4 justify-content-around">
+                                {% for tender_product in tender[1].products.all() %}
+                                <div class="col-md-3 border p-4 mx-4 my-3">
+                                    <div class=" text-center">
+                                    <img src="{{ url_for('static', filename='product_images/'+tender_product.product_obj.image) }}" class=" product_img">
+                                    </div>
+                                    <p class="product_name pt-2 mb-0">{{tender_product.product_obj.name}}</p>
+                                    {% if tender_product.product_obj.specifications %}
+                                    <p class="small text-muted mb-2">{{tender_product.product_obj.specifications}}</p>
+                                    {% endif %}
+                                    <h5><b>₹{{tender_product.product_obj.marked_retail_price}}</b></h5>
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            {% if tender_product.product_obj.rating %}
+                                            <span class="bg-success small text-light px-2 py-1 rounded">
+                                                {{tender_product.product_obj.rating}} <i class="fa fa-star small"></i>
+                                            </span>
+                                            {% endif %}
+                                        </div>
+                                        <div class="d-flex align-items-center">
+                                            Quantity - {{tender_product.quantity}}
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <hr>
+            <h3 class="text-muted text-center">No Records Found</h3>
+        {% endif %}
+    </div>
+
+    <div class="modal fade" id="draft_modal" tabindex="-1" role="dialog" aria-labelledby="draft_modal" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modal_title">Modal title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form method="POST" action="" id="draft_form">
+                        <div class="row align-items-center">
+                            <div class="col-md-2">Total Amount - ₹<span id="total_amount">0</span></div>
+                            <div class="col-md-4 d-flex align-items-center pt-2">
+                                <label class="col-md-5">Advance Amount - </label>₹&nbsp;<input type="number" name="advance_amount" class="form-control" required></div>  
+                            <div class="col-md-6 text-right">
+                                <button type="button" id="add_product" class="btn btn-outline-dark">Add Product</button>
+                            </div>
+                        </div>
+                        <h6>Products</h6>
+                        <input type="hidden" id="product_count" name="product_count">
+                        <div class="draft_products">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" form="draft_form" id="save_draft" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-none align-items-center mb-2" style="font-size:14px" id="product_structure">
+        <p class="d-none product_number"></p>
+        <div class="col-md-2 pl-0">
+            <label>Category</label>
+            <select class="form-control product_category" required>
+                <option value="" disabled selected>--Select Category--</option>
+                {% for category in product_categories %}
+                    <option value="{{category[0]}}">{{category[1]}}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label>Product</label>
+            <select class="form-control product_name" required>
+                <option>--Select Product--</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label>Product Quantity</label>
+            <input type="number" class="form-control product_quantity" required min="1">
+        </div>
+        <div class="col-md-1 text-center px-0">
+            <label>Product Price</label>
+            <p>₹<span class="product_price">200</span></p>
+        </div>
+        <div class="col-md-2 text-center px-0">
+            <label>Total Amount</label>
+            <p>₹<span class="product_total_amount">0</span></p>
+        </div>
+        <div class="col-md-2 pr-4">
+            <button class="btn btn-danger remove_product"> <i class="fa fa-trash"></i> Remove </button>
+        </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+<script>
+    $(document).ready(function(){
+        $(document).on("click",".request_tender",function(){
+            let id= $(this).attr("id").split("_")[2];
+            let request_tender_block = $("#collapse_"+id).find(".request_tender_block");
+            let confirmation_msg = $("<p class='mb-2'>Are you sure, you want to send this tender request?<p>\
+            <button id='cancel_request_"+id+"' class='btn btn-outline-secondary cancel_request mx-2'>No</button>\
+            <button id='request_"+id+"' class='btn btn-success mx-2 request'>Yes</button>\
+            ");
+            $(request_tender_block).html(confirmation_msg);
+            $("#collapse_"+id).find(".delete_block").addClass("d-none")
+        })
+
+        $(document).on("click",".cancel_request", function(){
+            let id= $(this).attr("id").split("_")[2];
+            let request_tender_block = $("#collapse_"+id).find(".request_tender_block");
+            let confirmation_msg = $("<button class='btn btn-outline-success request_tender' id='request_tender_"+id+"'>Send Tender</button>");
+            $(request_tender_block).html(confirmation_msg);
+            $("#collapse_"+id).find(".delete_block").removeClass("d-none")
+
+        })
+        
+        function request_tender(tender_id) {
+            return $.ajax({
+                type: "POST",
+                url: $("#request_tender_url").text(),
+                data: { tender_id: tender_id },
+            }).then((response) => {
+                if (response["status"]=='success'){
+                    window.location.reload();
+                }
+            });
+        }
+
+        $(document).on("click",".request", function(){
+            let id=Number($(this).attr("id").split("_")[1]);
+            request_tender(id)
+        });
+
+        $(document).on("click",".delete_draft",function(){
+            let id= $(this).attr("id").split("_")[2];
+            let delete_block = $("#collapse_"+id).find(".delete_block");
+            let confirmation_msg = $("<p class='mb-2'>Are you sure, you want to delete this draft?<p>\
+            <button id='cancel_delete_"+id+"' class='btn btn-outline-secondary cancel_delete mx-2'>No</button>\
+            <button id='delete_"+id+"' class='btn btn-success mx-2 delete'>Yes</button>\
+            ");
+            $(delete_block).html(confirmation_msg);
+            $("#collapse_"+id).find(".request_tender_block").addClass("d-none")
+        })
+
+        $(document).on("click",".cancel_delete", function(){
+            let id= $(this).attr("id").split("_")[2];
+            let delete_block = $("#collapse_"+id).find(".delete_block");
+            let confirmation_msg = $("<button class='btn btn-outline-danger delete_draft' id='delete_draft_"+id+"'>Delete Draft</button>");
+            $(delete_block).html(confirmation_msg);
+            $("#collapse_"+id).find(".request_tender_block").removeClass("d-none")
+
+        })
+        
+        function delete_tender(tender_id) {
+            return $.ajax({
+                type: "POST",
+                url: $("#delete_tender_url").text(),
+                data: { tender_id: tender_id },
+            }).then((response) => {
+                if (response["status"]=='success'){
+                    window.location.reload();
+                }
+            });
+        }
+
+        $(document).on("click",".delete", function(){
+            let id=Number($(this).attr("id").split("_")[1]);
+            delete_tender(id)
+        });
+
+        $("#create_draft").on("click", function(){
+            $("#modal_title").text("Create Draft");
+            $("#draft_modal").modal("show");
+            insert_product_row()
+        });
+
+
+        function insert_product_row() {
+            let product_number = Number($("#product_count").val()) + 1;
+            let product_row = $("#product_structure").clone().attr("id", "product_" + product_number);
+            $(product_row).find(".product_number").text(product_number);
+            $(product_row).find("select.product_category ").attr("name", "product_category_" + product_number);
+            $(product_row).find("select.product_name ").attr("name", "product_name_" + product_number);
+            $(product_row).find(".product_quantity").attr("name", "product_quantity_" + product_number);
+            $(product_row).find(".product_price").attr("id", "product_price_" + product_number);
+            $(product_row).find(".product_total_amount").attr("id", "product_total_amount_" + product_number);
+            $(product_row).find(".remove_product").attr("id", "remove_product_" + product_number);
+            $(product_row).removeClass('d-none').addClass("d-flex");
+            $(".draft_products").append(product_row);
+            $("#product_count").val(product_number);
+            if ($("#product_count").val()==1){
+                $("#product_1 .remove_product").addClass("d-none")
+            } else{
+                $("#product_1 .remove_product").removeClass("d-none")
+            }
+        }
+
+        function remove_product_row(product_number){
+            $.each($("#product_" + product_number).nextAll(), function (index, value) {
+                $(value).find(".product_number").text(Number(product_number + index));
+                $(value).find("select.product_category ").attr("name", "product_category_" + Number(product_number + index));
+                $(value).find("select.product_name ").attr("name", "product_name_" + Number(product_number + index));
+                $(value).find(".product_quantity").attr("name", "product_quantity_" + Number(product_number + index));
+                $(value).find(".product_price").attr("id", "product_price_" + Number(product_number + index));
+                $(value).find(".product_total_amount").attr("id", "product_total_amount_" + Number(product_number + index));
+                $(value).find(".remove_product").attr("id", "remove_product_" + Number(product_number + index));
+                $(value).attr("id", "product_" + Number(product_number + index));
+            });        
+            let total_price = Number($("#product_total_amount_"+product_number).text())
+            $("#total_amount").text(Number($("#total_amount").text())-total_price);
+            $("#product_count").val(Number($("#product_count").val()) - 1);
+
+            if ($("#product_count").val()==1){
+                $("#product_1 .remove_product").addClass("d-none")
+            }
+
+            $("#product_" + product_number).remove();
+        }
+
+        $("#add_product").on("click", function(){
+            insert_product_row()
+        })
+
+        $(document).on("click", ".remove_product", function(){
+            console.log("CLICK",$(this))
+            let product_number = Number($(this).attr("id").split("_")[2]);
+            remove_product_row(product_number)
+        })
+        
+        
+        function fetch_products(category) {
+        return $.ajax({
+            type: "POST",
+            url: $("#fetch_products_url").text(),
+            data: { category: category },
+        });
+        }
+
+        function fill_products(category, element) {
+        var promise = fetch_products(category);
+        promise.done(function (response) {
+            $(element).empty()
+            var null_option = "<option value='' disabled selected>--Select Product--</option>";
+            $(element).append(null_option)
+            $.each(response["product_list"], function (index, value) {
+            let option = $("<option></option>");
+            $(option).attr("value", value["id"]+"|"+value["price"]);
+            $(option).text(value["name"]);
+            $(element).append(option)
+            });
+        });
+        }
+
+        $(document).on("change",".product_category",function(){
+            let id = Number($(this).attr("name").split("_")[2]);
+            let value = $(this).val();
+            if (value!=""){
+                fill_products(Number(value), ".product_name[name='product_name_"+id+"']");
+            }
+        })
+
+        $(document).on("change",".product_name",function(){
+            let id = Number($(this).attr("name").split("_")[2]);
+            let value = $(this).val();
+            let price =Number( value.split("|")[1]);
+            let quantity =Number( $(".product_quantity[name='product_quantity_"+id+"']").val());
+            console.log(id,value, price, quantity)
+            let total_price = quantity * price;
+            $("#product_price_"+id).text(price);
+            let prev_price = Number( $("#product_total_amount_"+id).text());
+            $("#product_total_amount_"+id).text(total_price);
+            $("#total_amount").text(Number($("#total_amount").text())+total_price- prev_price);
+        })
+
+        $(document).on("keyup", ".product_quantity", function(){
+            let quantity = Number($(this).val());
+            let id= Number($(this).attr("name").split("_")[2])
+            let price =Number( $("#product_price_"+id).text());
+            let total_price = quantity * price;
+            let prev_price = Number( $("#product_total_amount_"+id).text());
+            $("#product_total_amount_"+id).text(total_price);
+            $("#total_amount").text(Number($("#total_amount").text())+total_price- prev_price);
+        });
+
+
+    });
+</script>
+{% endblock %}

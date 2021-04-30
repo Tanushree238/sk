@@ -1,6 +1,5 @@
 from flask import request, redirect, url_for, flash
 from flask_login import current_user
-from app.models import *
 
 
 def check_role(role):
