@@ -1,0 +1,54 @@
+{% extends "admin_main_base.html" %}
+
+{% block css %}
+<style>
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container p-3 my-4">
+    <div class="d-flex justify-content-between my-2">
+        <h4 class="m-0">Merchant Details</h4>
+    </div>
+
+    <div class="">
+        {% if merchants %}
+        <table class="table text-center my-4">
+            <tr>
+                <th>User Email</th>
+                <th>Name</th>
+                <th>Address</th>
+                <th>GST Number</th>
+                <th></th>
+            </tr>
+            {% for merchant in merchants %}
+            <tr>
+                <td class="d-none id">{{ merchant.id }}</td>
+                <td>{{ merchant.user.email }}</td>
+                <td>{{ merchant.name }}</td>
+                <td>{{ merchant.address }} {{ merchant.city }}, {{ merchant.state }}, {{ merchant.pin_code }}</td>
+                <td>{{ merchant.gst_number }}</td>
+                <td>
+                    <a href="">Tenders&nbsp;<i class="fa fa-arrow-right" aria-hidden="true"></i></a>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+        <hr>
+        <div class="my-5 text-center">
+            <img src="{{ url_for('admin.static', filename='box.svg') }}" style="width: 100px; height: 100px;">
+            <h4 class="my-3" style="font-size: 20px;">No Records Found</h4>
+        </div>
+        {% endif %}
+        
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+
+</script>
+{% endblock %}

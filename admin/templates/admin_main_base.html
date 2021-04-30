@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>SK</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+        
+        <!-- Jquery Validator -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.1/jquery.validate.min.js"
+            integrity="sha256-sPB0F50YUDK0otDnsfNHawYmA5M0pjjUf4TvRJkGFrI=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.1/additional-methods.min.js"
+            integrity="sha256-vb+6VObiUIaoRuSusdLRWtXs/ewuz62LgVXg2f1ZXGo=" crossorigin="anonymous"></script>
+        <!-- End -->
+
+        <script src="https://kit.fontawesome.com/32ee507fe4.js" crossorigin="anonymous"></script>
+        <link href="https://cdn.jsdelivr.net/npm/select2@4.0.12/dist/css/select2.min.css" rel="stylesheet" />
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.0.12/dist/js/select2.min.js"></script>
+    </head>
+
+    <style>
+        #flash_message {
+            position: absolute;
+            left: 50%;
+            z-index: 2;
+            transform: translateX(-50%);
+        }
+
+        #flash_message .alert {
+            text-align: center;
+            border-radius: 10px;
+        }
+
+        @import url('https://fonts.googleapis.com/css?family=Poppins&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,500;1,400&display=swap');
+        #mySidenav {
+            height: 100vh;
+            width: 260px;
+            top: 0;
+            left: 0;
+            background-color: #525252;
+            overflow: hidden;
+            transition: 0.3s;
+            padding: 20px 1em 10px 1em;
+            color: white;
+        }
+
+        .nav_dropdown{
+            cursor: pointer;
+        }
+
+        #mySidenav .dropdown-divider {
+            margin: 0.2rem 0;
+        }
+
+        .sidenav a,
+        .sidenav a:hover {
+            text-decoration: none;
+            font-size: 16px;
+            color: #fff;
+            display: block;
+            transition: 0.3s;
+            padding: 2px 8px;
+            font-family: "Poppins"
+        }
+
+        .sidenav h2 {
+            display: block;
+            font-family: "Poppins";
+            font-size: 28px;
+        }
+
+        .sidenav h6 {
+            display: block;
+            font-size: 13px;
+            font-family: "Poppins"
+        }
+    </style>
+
+    {% block css %}
+    {% endblock %}
+
+    <body>
+        <!-- Flash Messages -->
+        <div id="flash_message" class="my-2">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                            <div class="alert alert-{{ category }} shadow-sm border-0 px-3" role="alert">
+                                {{ message }}
+                            </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+        <!-- End -->
+
+        <div class="d-flex">
+            <div class="">
+                <div id="mySidenav" class="sidenav">
+                    <h2>Stock Keeping</h2>
+                    <h5 class="px-2 mt-5 mb-3"><i class="fa fa-user-o pr-2 user_icon" aria-hidden="true">&nbsp;{{ current_user.name }}</i></h5>
+                    <a href="{{ url_for('admin.dashboard') }}"><i class="fa fa-desktop pr-2" aria-hidden="true"></i>Dashboard</a>
+                    
+                    <div class="dropdown-divider"></div>
+                    <a href="{{ url_for('admin.delivery_person') }}"><i class="fa fa-user pr-2" aria-hidden="true"></i>Delivery Person</a>
+
+                    <div class="dropdown-divider"></div>
+                    <a href="{{ url_for('admin.merchant') }}"><i class="fa fa-building pr-2" aria-hidden="true"></i>Merchants</a>
+
+                    <div class="dropdown-divider"></div>
+                
+                    <a class="nav_dropdown" data-toggle="collapse" data-target="#delivery_person">
+                        <i class="fa fa-shopping-cart pr-1" aria-hidden="true"></i>
+                        Tender
+                        <i class="fa fa-chevron-down small pl-2" id="" aria-hidden="true"></i>
+                    </a>
+                    <div class="delivery_person pl-3 collapse" id="delivery_person">
+                        <a href="">Requests</a>
+                        <a href="">Approved</a>
+                    </div>
+
+                    <div class="dropdown-divider"></div>
+                    <a href="{{ url_for('admin.logout') }}"><i class="fa fa-power-off pr-2" aria-hidden="true"></i>Logout</a>
+                </div>
+            </div>
+            <div class="w-100">
+                {% block content %}
+                {% endblock %}
+            </div>
+        </div>
+    </body>
+
+
+    <script>
+        $(document).ready(function(){
+            setTimeout(function () {
+                $("#flash_message .alert").alert("close");
+                $("#flash_message").hide(3000);
+            }, 4000)
+        })
+    </script>
+
+    {% block js %}
+    {% endblock %}
+</html>

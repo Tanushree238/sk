@@ -15,7 +15,7 @@ def check_role(role):
 			return redirect(url_for(".login"))
 
 		return check
-		
+
 	return check_decorator
 
 		
