@@ -20,6 +20,8 @@ class User(db.Model, UserMixin):
 	user_roles = db.relationship('UserRole', backref="user", lazy="dynamic", cascade="save-update, delete")
 	delivery_persons = db.relationship('DeliveryPersonDetails', backref="user", lazy="dynamic", cascade="save-update, delete")
 	merchants = db.relationship('MerchantCompanyDetails', backref="user", lazy="dynamic", cascade="save-update, delete")
+	tenders = db.relationship('Tender', backref="user", lazy="dynamic", cascade="save-update, delete")
+	pickups = db.relationship('TenderPickup', backref="user", lazy="dynamic", cascade="save-update, delete")
 
 	created_on = db.Column( db.DateTime, default=datetime.now )
 	updated_on = db.Column( db.DateTime, onupdate = datetime.now )
@@ -142,6 +144,8 @@ class Tender(db.Model):
 	status_updated_on = db.Column( db.DateTime)
 
 	products = db.relationship('TenderProductMapper', backref="tender_obj", lazy="dynamic", cascade="save-update, delete")
+	pickup = db.relationship('TenderPickup', backref="tender_obj", lazy="dynamic", cascade="save-update, delete")
+	transactions = db.relationship('Transactions', backref="tender_obj", lazy="dynamic", cascade="save-update, delete")
 
 	created_on = db.Column( db.DateTime, default=datetime.now )
 	updated_on = db.Column( db.DateTime, onupdate = datetime.now )

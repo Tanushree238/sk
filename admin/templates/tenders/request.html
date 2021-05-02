@@ -1,0 +1,171 @@
+{% extends "admin_main_base.html" %}
+
+{% block css %}
+<style>
+    .product_img{
+        height: 180px;
+        width: 160px;
+    }
+    .product_name{
+        font-size: 15px;
+    }
+    
+</style>
+{% endblock %}
+{% block content %}
+    <div class="d-none" id="urls">
+        <span class="approve_tender_url">{{ url_for('admin.approve_tender') }}</span>
+        <span class="reject_tender_url">{{ url_for('admin.reject_tender') }}</span>
+    </div>
+    <div class="container my-5">
+        {% if tenders %}
+            <div id="accordion" class="my-3">
+                {% for tender in tenders %}
+                <div class="card my-3">
+                    <div class="card-header">
+                        <a class="card-link d-flex justify-content-between" data-toggle="collapse" href="#collapse_{{tender[1].id}}">
+                            <div>
+                                Tender #{{tender[0]}}  &nbsp;&nbsp;( Requested By {{ tender[1].user.merchants.first().name }} ) 
+                            </div>
+                            {% if tender[1].status=="Assigned" %}
+                                <p class="mb-0">{{tender[1].status}} To {{ tender[1].pickup.first().user.name }} On - {{tender[1].status_updated_on.strftime("%d %b %Y")}} </p>
+                            {% else %}
+                                <p class="mb-0">{{tender[1].status}} On - {{tender[1].status_updated_on.strftime("%d %b %Y")}} </p>
+                            {% endif %}
+                        </a>
+                    </div> 
+                    <div id="collapse_{{tender[1].id}}" class="collapse" data-parent="#accordion">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    Total Amount - {{tender[1].total_amount}}<br>
+                                    Advance Amount - {{tender[1].advance_amount}}
+                                </div>
+                                <div class="d-flex">
+                                    <div class="approve_tender_block text-center mx-2">
+                                        <button class="btn btn-outline-success approve_tender" id="approve_tender_{{tender[1].id}}">Approve Tender</button>
+                                    </div>
+                                    <div class="reject_block text-center mx-2">
+                                        <button class="btn btn-outline-danger reject_draft" id="reject_draft_{{tender[1].id}}">Reject Tender</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <h6>Products</h6>
+                            <div class="d-flex flex-wrap px-4 justify-content-around">
+                                {% for tender_product in tender[1].products.all() %}
+                                <div class="col-md-3 border p-4 mx-4 my-3">
+                                    <div class=" text-center">
+                                    <img src="{{ url_for('static', filename='product_images/'+tender_product.product_obj.image) }}" class=" product_img">
+                                    </div>
+                                    <p class="product_name pt-2 mb-0">{{tender_product.product_obj.name}}</p>
+                                    {% if tender_product.product_obj.specifications %}
+                                    <p class="small text-muted mb-2">{{tender_product.product_obj.specifications}}</p>
+                                    {% endif %}
+                                    <h5><b>₹{{tender_product.product_obj.marked_retail_price}}</b></h5>
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            {% if tender_product.product_obj.rating %}
+                                            <span class="bg-success small text-light px-2 py-1 rounded">
+                                                {{tender_product.product_obj.rating}} <i class="fa fa-star small"></i>
+                                            </span>
+                                            {% endif %}
+                                        </div>
+                                        <div class="d-flex align-items-center">
+                                            Quantity - {{tender_product.quantity}}
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <hr>
+            <h3 class="text-muted text-center">No Records Found</h3>
+        {% endif %}
+    </div>
+
+{% endblock %}
+
+{% block js %}
+<script>
+    $(document).ready(function(){
+        $(document).on("click",".approve_tender",function(){
+            let id= $(this).attr("id").split("_")[2];
+            let approve_tender_block = $("#collapse_"+id).find(".approve_tender_block");
+            let confirmation_msg = $("<p class='mb-2'>Are you sure, you want to approve this tender request?<p>\
+            <button id='cancle_approve_tender_"+id+"' class='btn btn-outline-secondary cancle_approve_tender mx-2'>No</button>\
+            <button id='approve_"+id+"' class='btn btn-success mx-2 approve'>Yes</button>\
+            ");
+            $(approve_tender_block).html(confirmation_msg);
+            $("#collapse_"+id).find(".reject_block").addClass("d-none")
+        })
+
+        $(document).on("click",".cancle_approve_tender", function(){
+            let id= $(this).attr("id").split("_")[3];
+            let approve_tender_block = $("#collapse_"+id).find(".approve_tender_block");
+            let confirmation_msg = $("<button class='btn btn-outline-success approve_tender' id='approve_tender_"+id+"'>Approve Tender</button>");
+            $(approve_tender_block).html(confirmation_msg);
+            $("#collapse_"+id).find(".reject_block").removeClass("d-none")
+
+        })
+        
+        function approve_tender(tender_id) {
+            return $.ajax({
+                type: "POST",
+                url: $("#urls span.approve_tender_url").text(),
+                data: { tender_id: tender_id },
+            }).then((response) => {
+                if (response["status"]=='success'){
+                    window.location.reload();
+                }
+            });
+        }
+
+        $(document).on("click",".approve", function(){
+            let id=Number($(this).attr("id").split("_")[1]);
+            approve_tender(id)
+        });
+
+        $(document).on("click",".reject_draft",function(){
+            let id= $(this).attr("id").split("_")[2];
+            let reject_block = $("#collapse_"+id).find(".reject_block");
+            let confirmation_msg = $("<p class='mb-2'>Are you sure, you want to reject this tender?<p>\
+            <button id='cancel_reject_tender_"+id+"' class='btn btn-outline-secondary cancel_reject_tender mx-2'>No</button>\
+            <button id='reject_"+id+"' class='btn btn-success mx-2 reject'>Yes</button>\
+            ");
+            $(reject_block).html(confirmation_msg);
+            $("#collapse_"+id).find(".approve_tender_block").addClass("d-none")
+        })
+
+        $(document).on("click",".cancel_reject_tender", function(){
+            let id= $(this).attr("id").split("_")[3];
+            let reject_block = $("#collapse_"+id).find(".reject_block");
+            let confirmation_msg = $("<button class='btn btn-outline-danger reject_draft' id='reject_draft_"+id+"'>Reject Tender</button>");
+            $(reject_block).html(confirmation_msg);
+            $("#collapse_"+id).find(".approve_tender_block").removeClass("d-none")
+
+        })
+        
+        function reject_tender(tender_id) {
+            return $.ajax({
+                type: "POST",
+                url: $("#urls span.reject_tender_url").text(),
+                data: { tender_id: tender_id },
+            }).then((response) => {
+                if (response["status"]=='success'){
+                    window.location.reload();
+                }
+            });
+        }
+
+        $(document).on("click",".reject", function(){
+            let id=Number($(this).attr("id").split("_")[1]);
+            reject_tender(id)
+        });
+    })
+</script>
+{% endblock %}

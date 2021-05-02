@@ -29,7 +29,7 @@
                 <td>{{ merchant.address }} {{ merchant.city }}, {{ merchant.state }}, {{ merchant.pin_code }}</td>
                 <td>{{ merchant.gst_number }}</td>
                 <td>
-                    <a href="">Tenders&nbsp;<i class="fa fa-arrow-right" aria-hidden="true"></i></a>
+                    <a href="{{ url_for('admin.merchant_tenders', merchant_id=merchant.user.id) }}">Tenders&nbsp;<i class="fa fa-arrow-right" aria-hidden="true"></i></a>
                 </td>
             </tr>
             {% endfor %}
