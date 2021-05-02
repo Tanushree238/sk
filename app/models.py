@@ -217,7 +217,7 @@ class Transactions(db.Model):
 	mode_description = db.Column( db.String(200), nullable=False)
 	payment_date =  db.Column( db.DateTime, nullable=False )
 	description = db.Column( db.String(200), nullable=False)
-	gst_percentage = db.Column( db.Integer, nullable=False )
+	gst_percentage = db.Column( db.Integer, nullable=True )
 
 	created_on = db.Column( db.DateTime, default=datetime.now )
 	updated_on = db.Column( db.DateTime, onupdate = datetime.now )

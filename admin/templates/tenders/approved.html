@@ -16,6 +16,7 @@
     <div class="d-none" id="urls">
         <span class="approve_tender_url">{{ url_for('admin.approve_tender') }}</span>
         <span class="reject_tender_url">{{ url_for('admin.reject_tender') }}</span>
+        <span class="return_tender_url">{{ url_for('admin.return_tender') }}</span>
         <span class="fetch_delivery_persons">{{ url_for('admin.fetch_delivery_persons') }}</span>
         <span class="received_delivery_url">{{ url_for('admin.received_delivery') }}</span>
     </div>
@@ -43,14 +44,14 @@
                                     Total Amount - {{tender[1].total_amount}}<br>
                                     Advance Amount - {{tender[1].advance_amount}}
                                 </div>
-                                <div class="d-flex">
+                                <div class="d-flex align-items-center">
                                     {% if tender[1].status=="Approved" %}
                                         {% if tender[1].paid_amount >= tender[1].advance_amount %}
                                         <div class="assign_delivery_block text-center mx-2">
                                             <button class="btn btn-outline-success assign_delivery" id="assign_delivery_{{tender[1].id}}">Assign Delivery</button>
                                         </div>
                                         {% else %}
-                                        <a href="" class="">Add Transaction of Amount ₹{{ tender[1].advance_amount -  tender[1].paid_amount }}</a>
+                                        <a href="{{ url_for( 'admin.add_transaction', tender_id=tender[1].id, next_url=url_for('admin.merchant_tenders', merchant_id=tender[1].user.id) ) }}" class="">Add Transaction of Amount ₹{{ tender[1].advance_amount -  tender[1].paid_amount }}</a>
                                         {% endif %}
                                     {% elif tender[1].status=="Assigned" %}
                                         {% if tender[1].pickup.first().status=="Delivered" %}
@@ -61,12 +62,14 @@
                                         <p class="">Delivery {{ tender[1].pickup.first().status }}</p>
                                         {% endif %}
                                     {% elif tender[1].status=="Recieved" %}
-                                    <div class="complete_tender_block text-center mx-2">
-                                        <button class="btn btn-outline-success complete_tender" id="complete_tender_{{tender[1].id}}">Complete Tender</button>
-                                    </div>
-                                    <div class="return_tender_block text-center mx-2">
-                                        <button class="btn btn-outline-danger return_tender" id="return_tender_{{tender[1].id}}">Return Tender</button>
-                                    </div>
+                                        {% if tender[1].paid_amount != tender[1].total_amount %}
+                                            <a href="{{ url_for( 'admin.add_transaction', tender_id=tender[1].id, next_url=url_for('admin.merchant_tenders', merchant_id=tender[1].user.id) ) }}" class="mx-2">Add Transaction of Amount ₹{{ tender[1].total_amount -  tender[1].paid_amount }}</a>
+                                            <div class="return_tender_block text-center mx-2">
+                                                <button class="btn btn-outline-danger return_tender" id="return_tender_{{tender[1].id}}">Return Tender</button>
+                                            </div>
+                                        {% endif %}
+                                    {% elif tender[1].status=="Returned" and  tender[1].paid_amount > 0 %}
+                                        <a href="{{ url_for( 'admin.add_transaction', tender_id=tender[1].id, next_url=url_for('admin.merchant_tenders', merchant_id=tender[1].user.id) ) }}" class="">Add Refund Transaction of Amount ₹{{ tender[1].paid_amount }}</a>
                                     {% endif %}
                                 </div>
                             </div>
@@ -97,6 +100,33 @@
                                 </div>
                                 {% endfor %}
                             </div>
+                            {% if tender[1].transactions.all() %}
+                            <div class="">
+                                <p>
+                                    <a class="" data-toggle="collapse" href="#transactions_collapse_{{ tender[1].id }}" role="button" aria-expanded="false" aria-controls="transactions_collapse_{{ tender[1].id }}">
+                                    Transactions <i class="fa fa-arrow-right pl-2" aria-hidden="true"></i>
+                                    </a>
+                                </p>
+                                <div class="collapse" id="transactions_collapse_{{ tender[1].id }}">
+                                    <table class="table border text-center">
+                                        <tr>
+                                            <th>Amount</th>
+                                            <th>Payment Mode</th>
+                                            <th>Payment Date</th>
+                                            <th>Description</th>
+                                        </tr>
+                                        {% for transaction in tender[1].transactions.all() %}
+                                            <tr>
+                                                <td>₹{{ transaction.amount }}</td>
+                                                <td>{{ transaction.mode }}</td>
+                                                <td>{{ transaction.payment_date.strftime("%d %b %Y %I:%M %p") }}</td>
+                                                <td>{{ transaction.description  }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </table>
+                                </div>
+                            </div>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -140,7 +170,46 @@
 {% block js %}
 <script>
     $(document).ready(function(){
-    
+        // Return Tender
+        $(document).on("click",".return_tender",function(){
+            let id= $(this).attr("id").split("_")[2];
+            let return_tender_block = $("#collapse_"+id).find(".return_tender_block");
+            let confirmation_msg = $("<p class='mb-2'>Are you sure, you want to return this tender?<p>\
+            <button id='cancle_return_tender_"+id+"' class='btn btn-outline-secondary cancle_return_tender mx-2'>No</button>\
+            <button id='approve_"+id+"' class='btn btn-success mx-2 approve'>Yes</button>\
+            ");
+            $(return_tender_block).html(confirmation_msg);
+            $("#collapse_"+id).find(".reject_block").addClass("d-none")
+        })
+
+        $(document).on("click",".cancle_return_tender", function(){
+            let id= $(this).attr("id").split("_")[3];
+            let return_tender_block = $("#collapse_"+id).find(".return_tender_block");
+            let confirmation_msg = $("<button class='btn btn-outline-danger return_tender' id='return_tender_"+id+"'>Complete Tender</button>");
+            $(return_tender_block).html(confirmation_msg);
+            $("#collapse_"+id).find(".reject_block").removeClass("d-none")
+
+        })
+        
+        function return_tender(tender_id) {
+            return $.ajax({
+                type: "POST",
+                url: $("#urls span.return_tender_url").text(),
+                data: { tender_id: tender_id },
+            }).then((response) => {
+                if (response["status"]=='success'){
+                    window.location.reload();
+                }
+            });
+        }
+
+        $(document).on("click",".approve", function(){
+            let id=Number($(this).attr("id").split("_")[1]);
+            // console.log("Return-->",id);
+            return_tender(id)
+        });
+        // End
+
         // Assign Delivery
         $(document).on("click", ".assign_delivery", function(){
             let tender_id= $(this).attr("id").split("_")[2];
