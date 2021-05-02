@@ -7,6 +7,7 @@ from app.decorators import check_role
 from app.utility import generate_random_password
 
 @admin.route("/", methods=["GET","POST"], endpoint="login")
+@admin.route("/login", methods=["GET","POST"], endpoint="login")
 def login():
 	if request.method=="POST":
 		email = request.form.get('email')

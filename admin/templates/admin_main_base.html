@@ -119,8 +119,19 @@
                         <i class="fa fa-chevron-down small pl-2" id="" aria-hidden="true"></i>
                     </a>
                     <div class="delivery_person pl-3 collapse" id="delivery_person">
-                        <a href="">Requests</a>
-                        <a href="">Approved</a>
+                        <a href="{{ url_for('admin.tender_requests') }}">Requests</a>
+                        <a href="{{ url_for('admin.tender_approved') }}">Approved</a>
+                    </div>
+
+                    <div class="dropdown-divider"></div>
+                    <a class="nav_dropdown" data-toggle="collapse" data-target="#transaction">
+                        <i class="fa fa-file-text-o pr-2" aria-hidden="true"></i>
+                        Transaction
+                        <i class="fa fa-chevron-down small pl-2" id="" aria-hidden="true"></i>
+                    </a>
+                    <div class="transaction pl-3 collapse" id="transaction">
+                        <a href="{{ url_for('admin.tender_requests') }}">Add New Transaction</a>
+                        <a href="{{ url_for('admin.tender_approved') }}">Transaction History</a>
                     </div>
 
                     <div class="dropdown-divider"></div>
