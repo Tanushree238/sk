@@ -169,7 +169,7 @@ class TenderPickup(db.Model):
 	delivery_person_id = db.Column( db.Integer, db.ForeignKey('user.id') )
 	tender_id = db.Column( db.Integer, db.ForeignKey('tender.id') )
 	status = db.Column( db.String(200), nullable=False, default = "Assigned" )
-	# Assigned/Initated/PickedUp/Delievered 
+	# Assigned/Initated/PickedUp/Delivered 
 	created_on = db.Column( db.DateTime, default=datetime.now )
 	updated_on = db.Column( db.DateTime, onupdate = datetime.now )
 
@@ -215,7 +215,7 @@ class Transactions(db.Model):
 	mode_description = db.Column( db.String(200), nullable=False)
 	payment_date =  db.Column( db.DateTime, nullable=False )
 	description = db.Column( db.String(200), nullable=False)
-	gst_percentage = db.Column( db.Integer, nullable=False )
+	gst_percentage = db.Column( db.Integer, nullable=True )
 
 	created_on = db.Column( db.DateTime, default=datetime.now )
 	updated_on = db.Column( db.DateTime, onupdate = datetime.now )

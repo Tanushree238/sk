@@ -104,3 +104,17 @@ def received_delivery():
     return jsonify({"status": "success"})
 
 
+@admin.route("/return_tender", methods=["POST"], endpoint="return_tender")
+@login_required
+@check_role(role_name)
+def return_tender():
+    tender_id = int(request.form.get("tender_id"))
+    tender = Tender.query.get(tender_id)
+    tender.status = "Returned"
+    tender.status_updated_on = datetime.now()
+    db.session.commit()
+    flash("Tender has been Returned successfully", "success")
+
+    return jsonify({"status": "success"})
+
+

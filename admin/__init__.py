@@ -8,4 +8,4 @@ admin = Blueprint("admin", __name__, url_prefix='/admin', template_folder="templ
 
 role_name = "Admin"
 
-from . import routes, delivery_person_routes, merchant_routes, tender_routes
+from . import routes, delivery_person_routes, merchant_routes, tender_routes, transaction_routes

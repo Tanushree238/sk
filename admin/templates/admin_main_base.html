@@ -124,17 +124,6 @@
                     </div>
 
                     <div class="dropdown-divider"></div>
-                    <a class="nav_dropdown" data-toggle="collapse" data-target="#transaction">
-                        <i class="fa fa-file-text-o pr-2" aria-hidden="true"></i>
-                        Transaction
-                        <i class="fa fa-chevron-down small pl-2" id="" aria-hidden="true"></i>
-                    </a>
-                    <div class="transaction pl-3 collapse" id="transaction">
-                        <a href="{{ url_for('admin.tender_requests') }}">Add New Transaction</a>
-                        <a href="{{ url_for('admin.tender_approved') }}">Transaction History</a>
-                    </div>
-
-                    <div class="dropdown-divider"></div>
                     <a href="{{ url_for('admin.logout') }}"><i class="fa fa-power-off pr-2" aria-hidden="true"></i>Logout</a>
                 </div>
             </div>
