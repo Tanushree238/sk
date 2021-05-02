@@ -28,9 +28,9 @@
                                 Tender #{{tender[0]}}  &nbsp;&nbsp;( Requested By {{ tender[1].user.merchants.first().name }} ) 
                             </div>
                             {% if tender[1].status=="Assigned" %}
-                                <p class="mb-0">{{tender[1].status}} To {{ tender[1].pickup.first().user.name }} On - {{tender[1].status_updated_on.strftime("%d %b %Y")}} </p>
+                                <p class="mb-0">{{tender[1].status}} To {{ tender[1].pickup.first().user.name }} On - {{tender[1].status_updated_on.strftime("%d %b %Y %I:%M %p")}} </p>
                             {% else %}
-                                <p class="mb-0">{{tender[1].status}} On - {{tender[1].status_updated_on.strftime("%d %b %Y")}} </p>
+                                <p class="mb-0">{{tender[1].status}} On - {{tender[1].status_updated_on.strftime("%d %b %Y %I:%M %p")}} </p>
                             {% endif %}
                         </a>
                     </div> 

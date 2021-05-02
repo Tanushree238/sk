@@ -58,7 +58,7 @@ def merchant_home():
 		products = Product.query.all()
 	categories = ProductCategory.query.all()
 	
-	return render_template("merchant_dashboard.html", categories=categories, products=products, selected_category=(category))
+	return render_template("merchant_dashboard.html", categories=categories, products=products, selected_category=(category), len= len)
 
 
 @merchant.route('/profile', methods=["GET"], endpoint="profile")

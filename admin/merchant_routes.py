@@ -75,7 +75,7 @@ def assign_delivery_persons():
     user = delivery_person.user
     tender = Tender.query.get(tender_id)
 
-    delivery_person.status = "Uavailable"
+    delivery_person.status = "Unavailable"
     tender.status = "Assigned"
     tender.status_updated_on = datetime.now()
     pickup_obj = TenderPickup(delivery_person_id=user.id, tender_id=tender_id)
@@ -95,12 +95,10 @@ def received_delivery():
     delivery_person = tender.pickup.first().user.delivery_persons.first()
     tender.status = "Recieved"
     delivery_person.status = "Available"
-
     tender.status_updated_on = datetime.now()
     db.session.commit()
     flash("Tender has been received successfully", "success")
     flash("Please Make a Transaction for remaining payment of ₹{}".format(tender.total_amount-tender.paid_amount), "info")
-
     return jsonify({"status": "success"})
 
 

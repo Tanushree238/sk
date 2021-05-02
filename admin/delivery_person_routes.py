@@ -33,9 +33,9 @@ def add_delivery_person():
 		db.session.add(user_obj)
 		db.session.commit()
 
-		delivery_person_role = Role.query.filter_by(name="delivery").first()
+		delivery_person_role = Role.query.filter_by(name="Delivery").first()
 		if not delivery_person_role:
-			delivery_person_role = Role(name="delivery")
+			delivery_person_role = Role(name="Delivery")
 			db.session.add(delivery_person_role)
 			db.session.commit()
 

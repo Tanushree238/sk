@@ -30,9 +30,9 @@
                                 Tender #{{tender[0]}}  &nbsp;&nbsp;( Requested By {{ tender[1].user.merchants.first().name }} ) 
                             </div>
                             {% if tender[1].status=="Assigned" %}
-                                <p class="mb-0">{{tender[1].status}} To {{ tender[1].pickup.first().user.name }} On - {{tender[1].status_updated_on.strftime("%d %b %Y")}} </p>
+                                <p class="mb-0">{{tender[1].status}} To {{ tender[1].pickup.first().user.name }} On - {{tender[1].status_updated_on.strftime("%d %b %Y %I:%M %p")}} </p>
                             {% else %}
-                                <p class="mb-0">{{tender[1].status}} On - {{tender[1].status_updated_on.strftime("%d %b %Y")}} </p>
+                                <p class="mb-0">{{tender[1].status}} On - {{tender[1].status_updated_on.strftime("%d %b %Y %I:%M %p")}} </p>
                             {% endif %}
                         </a>
                     </div> 
@@ -53,7 +53,7 @@
                                         <a href="" class="">Add Transaction of Amount ₹{{ tender[1].advance_amount -  tender[1].paid_amount }}</a>
                                         {% endif %}
                                     {% elif tender[1].status=="Assigned" %}
-                                        {% if tender[1].pickup.first().status=="Delievered" %}
+                                        {% if tender[1].pickup.first().status=="Delivered" %}
                                         <div class="received_delivery_block text-center mx-2">
                                             <button class="btn btn-outline-success received_delivery" id="received_delivery_{{tender[1].id}}">Received Delivery</button>
                                         </div>

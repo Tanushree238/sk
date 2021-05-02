@@ -7,14 +7,11 @@ from app.decorators import check_role
 from app.utility import generate_random_password
 
 @admin.route("/", methods=["GET","POST"], endpoint="login")
-@admin.route("/login", methods=["GET","POST"], endpoint="login")
 def login():
 	if request.method=="POST":
 		email = request.form.get('email')
 		password = request.form.get('password')
-		print(email, password)
 		user_obj = User.query.filter_by(email=email).first()
-		print(user_obj)
 		if user_obj and user_obj.check_password(password) and "Admin" in  user_obj.get_roles():
 			login_user(user_obj)
 			return redirect(url_for("admin.dashboard"))

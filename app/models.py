@@ -169,7 +169,9 @@ class TenderPickup(db.Model):
 	delivery_person_id = db.Column( db.Integer, db.ForeignKey('user.id') )
 	tender_id = db.Column( db.Integer, db.ForeignKey('tender.id') )
 	status = db.Column( db.String(200), nullable=False, default = "Assigned" )
-	# Assigned/Initated/PickedUp/Delievered 
+	# Assigned/Initated/PickedUp/Delivered 
+	status_updated_on = db.Column( db.DateTime, default = datetime.now )
+
 	created_on = db.Column( db.DateTime, default=datetime.now )
 	updated_on = db.Column( db.DateTime, onupdate = datetime.now )
 

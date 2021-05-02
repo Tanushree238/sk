@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Tamani - Stock Keeper</title>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+
+		<script src="https://kit.fontawesome.com/32ee507fe4.js" crossorigin="anonymous"></script>
+
+		<link href="https://cdn.jsdelivr.net/npm/select2@4.0.12/dist/css/select2.min.css" rel="stylesheet" />
+		<script src="https://cdn.jsdelivr.net/npm/select2@4.0.12/dist/js/select2.min.js"></script>
+</head>
+<style>
+	.navbar-brand{
+		color: #fff;
+	}
+	.nav-item .nav-link{
+		color: #fafafa ;
+	}
+    .product_img{
+        height: 180px;
+        width: 160px;
+    }
+    .product_name{
+        font-size: 15px;
+    }
+</style>
+<body>
+    <div class="d-none">
+        <span id="initiate_delivery_url">{{ url_for('delivery.initiate_delivery') }}</span>
+        <span id="pickedup_delivery_url">{{ url_for('delivery.pickedup_delivery') }}</span>
+        <span id="delivered_url">{{ url_for('delivery.delivered') }}</span>
+
+    </div>
+		<nav class="navbar navbar-expand-lg bg-dark px-5 py-0">
+			<a class="navbar-brand" href="{{ url_for('delivery.dashboard') }}">
+				<img src="{{ url_for('static', filename='Tamani Logo.png') }}" style="height:65px">
+			</a>
+			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			<div class="collapse navbar-collapse" id="navbarSupportedContent">
+				<ul class="navbar-nav ml-auto mr-5 align-items-center">
+						<li class="nav-item">
+								<a class="nav-link" href="{{ url_for('delivery.dashboard') }}">
+									Home
+								</a>
+						</li>
+						<li class="nav-item">
+								<a class="nav-link" href="{{ url_for('delivery.logout') }}">
+										Sign Out
+								</a>
+						</li>
+				</ul>
+			</div>
+		</nav>
+		<div class="container py-4">
+				{% if current_assigned_tender %}
+					<div class="shadow p-4">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4 class="mb-3">Assigned Delivery Details</h4>
+                                <h6>Merchant Details</h6>
+                                <p class="mb-0">Contact - {{ current_assigned_tender.tender_obj.user.contact }}</p>
+                                <p>Address - {{ current_assigned_tender.tender_obj.user.merchants.first().address }}, 
+                                    {{ current_assigned_tender.tender_obj.user.merchants.first().city }}, 
+                                    {{ current_assigned_tender.tender_obj.user.merchants.first().state }}, 
+                                    {{ current_assigned_tender.tender_obj.user.merchants.first().pin_code }}</p>
+                            </div>
+                            <div class="text-center">
+                            <p>{{ current_assigned_tender.status }} on {{ current_assigned_tender.status_updated_on.strftime('%d %b %Y %I:%M %p') }}</p>
+                            {% if current_assigned_tender.status =="Assigned" %}
+                                <div class="initiated_block text-center mx-2">
+                                    <button class="btn btn-outline-success initiated_delivery" id="initiated_delivery_{{current_assigned_tender.id}}">Initiated Delivery</button>
+                                </div>
+                            {% elif current_assigned_tender.status == "Initiated" %}
+                                <div class="pickedup_block text-center mx-2">
+                                    <button class="btn btn-outline-success pickedup_delivery" id="pickedup_delivery_{{current_assigned_tender.id}}">Picked Up Delivery</button>
+                                </div>
+                            {% elif current_assigned_tender.status == "Picked Up" %}
+                                <div class="delivered_block text-center mx-2">
+                                    <button class="btn btn-outline-success delivered" id="delivered_{{current_assigned_tender.id}}">Delivered</button>
+                                </div>
+                            {% endif %}
+                            </div>
+                        </div>
+						<button class='btn px-0' data-toggle="collapse" href="#collapse_products">
+                            <b>Products &nbsp;<i class="fa fa-arrow-right small"></i></b>
+                        </button>
+                        <div class="collapse" id="collapse_products">
+                            <div class="d-flex flex-wrap px-4 justify-content-around">
+                                    {% for tender_product in current_assigned_tender.tender_obj.products.all() %}
+                                    <div class="col-md-3 border p-4 mx-4 my-3">
+                                            <div class=" text-center">
+                                            <img src="{{ url_for('static', filename='product_images/'+tender_product.product_obj.image) }}" class=" product_img">
+                                            </div>
+                                            <p class="product_name pt-2 mb-0">{{tender_product.product_obj.name}}</p>
+                                            {% if tender_product.product_obj.specifications %}
+                                            <p class="small text-muted mb-2">{{tender_product.product_obj.specifications}}</p>
+                                            {% endif %}
+                                            <h5><b>₹{{tender_product.product_obj.marked_retail_price}}</b></h5>
+                                            <div class="d-flex justify-content-between">
+                                                <div>
+                                                        {% if tender_product.product_obj.rating %}
+                                                        <span class="bg-success small text-light px-2 py-1 rounded">
+                                                                {{tender_product.product_obj.rating}} <i class="fa fa-star small"></i>
+                                                        </span>
+                                                        {% endif %}
+                                                </div>
+                                                <div class="d-flex align-items-center">
+                                                        Quantity - {{tender_product.quantity}}
+                                                </div>
+                                            </div>
+                                    </div>
+                                    {% endfor %}
+                            </div>
+                        </div>
+					</div>
+				{% else %}
+                    <h4 class="my-3 text-center" style="font-size: 20px;">No Delivery Assigned</h4>
+				{% endif %}
+                <div class="col-md-12 d-flex py-4">
+                    <div class="col-md-5 px-0 py-1">
+                        <hr class="mx-0 my-2">
+                    </div>
+                    <div class="col-md-2 px-0 text-center">
+                        <span class="text-muted">Delivery History</span>
+                    </div>
+                    <div class="col-md-5 px-0 py-1">
+                        <hr class="mx-0 my-2">
+                    </div>
+                </div>
+                {% if past_tenders %}
+                    {% for tender in past_tenders %}
+                        <div class="shadow p-4">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h6>Merchant Details</h6>
+                                    <p class="mb-0">Contact - {{ tender.tender_obj.user.contact }}</p>
+                                    <p>Address - {{ tender.tender_obj.user.merchants.first().address }}, 
+                                        {{ tender.tender_obj.user.merchants.first().city }}, 
+                                        {{ tender.tender_obj.user.merchants.first().state }}, 
+                                        {{ tender.tender_obj.user.merchants.first().pin_code }}</p>
+                                </div>
+                                <p>{{ tender.status }} on {{ tender.status_updated_on.strftime('%d %b %Y %I:%M %p') }}</p>
+                            </div>
+                            
+                            <button class='btn px-0' data-toggle="collapse" href="#collapse_products_{{tender.id}}">
+                                <b>Products &nbsp;<i class="fa fa-arrow-right small"></i></b>
+                            </button>
+                            <div class="collapse" id="collapse_products_{{tender.id}}">
+                                <div class="d-flex flex-wrap px-4 justify-content-around">
+                                    {% for tender_product in tender.tender_obj.products.all() %}
+                                        <div class="col-md-3 border p-4 mx-4 my-3">
+                                            <div class=" text-center">
+                                            <img src="{{ url_for('static', filename='product_images/'+tender_product.product_obj.image) }}" class=" product_img">
+                                            </div>
+                                            <p class="product_name pt-2 mb-0">{{tender_product.product_obj.name}}</p>
+                                            {% if tender_product.product_obj.specifications %}
+                                            <p class="small text-muted mb-2">{{tender_product.product_obj.specifications}}</p>
+                                            {% endif %}
+                                            <h5><b>₹{{tender_product.product_obj.marked_retail_price}}</b></h5>
+                                            <div class="d-flex justify-content-between">
+                                                <div>
+                                                        {% if tender_product.product_obj.rating %}
+                                                        <span class="bg-success small text-light px-2 py-1 rounded">
+                                                                {{tender_product.product_obj.rating}} <i class="fa fa-star small"></i>
+                                                        </span>
+                                                        {% endif %}
+                                                </div>
+                                                <div class="d-flex align-items-center">
+                                                        Quantity - {{tender_product.quantity}}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                <div class="text-center">
+                    <img src="{{ url_for('merchant.static', filename='box.svg') }}" style="width: 130px; height: 130px;">
+                    <h4 class="my-3" style="font-size: 20px;">No Records Found</h4>
+                </div>
+                {% endif %}
+		</div>
+</body>
+<script>
+     $(document).ready(function(){
+        
+        $(document).on("click",".initiated_delivery",function(){
+            let id= $(this).attr("id").split("_")[2];
+            let initiated_block = $(".initiated_block");
+            let confirmation_msg = $("<p class='mb-2'>Are you sure, you initiated this delivery?<p>\
+            <button id='cancel_initiate_"+id+"' class='btn btn-outline-secondary cancel_initiate mx-2'>No</button>\
+            <button id='initiate_"+id+"' class='btn btn-success mx-2 initiate'>Yes</button>\
+            ");
+            $(initiated_block).html(confirmation_msg);
+        })
+
+        $(document).on("click",".cancel_initiate", function(){
+            let id= $(this).attr("id").split("_")[2];
+            let initiated_block =$(".initiated_block");
+            let confirmation_msg = $("<button class='btn btn-outline-success initiated_delivery' id='initiated_delivery_"+id+"'>Initiated Delivery</button>");
+            $(initiated_block).html(confirmation_msg);
+        })
+        
+        function initiate_delivery(tender_pickup_id) {
+            return $.ajax({
+                type: "POST",
+                url: $("#initiate_delivery_url").text(),
+                data: { tender_pickup_id: tender_pickup_id },
+            }).then((response) => {
+                if (response["status"]=='success'){
+                    window.location.reload();
+                }
+            });
+        }
+
+        $(document).on("click",".initiate", function(){
+            let id=Number($(this).attr("id").split("_")[1]);
+            initiate_delivery(id)
+        });
+
+        
+        $(document).on("click",".pickedup_delivery",function(){
+            let id= $(this).attr("id").split("_")[2];
+            let pickedupd_block = $(".pickedup_block");
+            let confirmation_msg = $("<p class='mb-2'>Are you sure, you picked up this delivery?<p>\
+            <button id='cancel_pickedup_"+id+"' class='btn btn-outline-secondary cancel_pickedup mx-2'>No</button>\
+            <button id='pickedup_"+id+"' class='btn btn-success mx-2 pickedup'>Yes</button>\
+            ");
+            $(pickedupd_block).html(confirmation_msg);
+        })
+
+        $(document).on("click",".cancel_pickedup", function(){
+            let id= $(this).attr("id").split("_")[2];
+            let pickedupd_block =$(".pickedup_block");
+            let confirmation_msg = $("<button class='btn btn-outline-success pickedup_delivery' id='pickedup_delivery_"+id+"'>Picked Up Delivery</button>");
+            $(pickedupd_block).html(confirmation_msg);
+        })
+        
+        function pickedup_delivery(tender_pickup_id) {
+            return $.ajax({
+                type: "POST",
+                url: $("#pickedup_delivery_url").text(),
+                data: { tender_pickup_id: tender_pickup_id },
+            }).then((response) => {
+                if (response["status"]=='success'){
+                    window.location.reload();
+                }
+            });
+        }
+
+        $(document).on("click",".pickedup", function(){
+            let id=Number($(this).attr("id").split("_")[1]);
+            pickedup_delivery(id)
+        });
+        
+        
+        $(document).on("click",".delivered",function(){
+            let id= $(this).attr("id").split("_")[1];
+            let delivered_block = $(".delivered_block");
+            let confirmation_msg = $("<p class='mb-2'>Are you sure, you delivered this delivery?<p>\
+            <button id='cancel_delivered_"+id+"' class='btn btn-outline-secondary cancel_delivered mx-2'>No</button>\
+            <button id='comp_delivered_"+id+"' class='btn btn-success mx-2 comp_delivered'>Yes</button>\
+            ");
+            $(delivered_block).html(confirmation_msg);
+        })
+
+        $(document).on("click",".cancel_delivered", function(){
+            let id= $(this).attr("id").split("_")[2];
+            let delivered_block =$(".delivered_block");
+            let confirmation_msg = $("<button class='btn btn-outline-success delivered' id='delivered_"+id+"'>Delivered</button>");
+            $(delivered_block).html(confirmation_msg);
+        })
+        
+        function delivered(tender_pickup_id) {
+            return $.ajax({
+                type: "POST",
+                url: $("#delivered_url").text(),
+                data: { tender_pickup_id: tender_pickup_id },
+            }).then((response) => {
+                if (response["status"]=='success'){
+                    window.location.reload();
+                }
+            });
+        }
+
+        $(document).on("click",".comp_delivered", function(){
+            let id=Number($(this).attr("id").split("_")[2]);
+            delivered(id)
+        });
+        
+    });
+
+</script>
+</html>

@@ -14,7 +14,8 @@ login_manager = LoginManager(app)
 login_manager.login_view = "login"
 login_manager.blueprint_login_views = {
     "admin": "admin.login",
-    "merchant": "login"
+    "merchant": "login",
+    "delivery": "delivery.login",
 }
 
 login_manager.login_message_category = 'info'
