@@ -24,7 +24,7 @@
                     <div class="card-header">
                         <a class="card-link d-flex justify-content-between" data-toggle="collapse" href="#collapse_{{tender[1].id}}">
                             <div>
-                                Draft #{{tender[0]}} 
+                                Tender #{{tender[0]}} 
                             </div>
                             <p class="mb-0">{{tender[1].status}} On - {{tender[1].status_updated_on.strftime("%d %b %Y")}} </p>
                         </a>
@@ -76,7 +76,10 @@
             </div>
         {% else %}
             <hr>
-            <h3 class="text-muted text-center">No Records Found</h3>
+            <div class="text-center">
+                <img src="{{ url_for('merchant.static', filename='box.svg') }}" style="width: 130px; height: 130px;">
+                <h4 class="my-3" style="font-size: 20px;">No Records Found</h4>
+            </div>
         {% endif %}
     </div>
 {% endblock %}

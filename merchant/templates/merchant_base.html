@@ -27,43 +27,44 @@
 {% endblock %}
 <body>
     <nav class="navbar navbar-expand-lg bg-dark px-5 py-0">
-        <a class="navbar-brand" href="#"><img src="{{ url_for('static', filename='Tamani Logo.png') }}" style="height:70px"></a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav ml-auto mr-5 align-items-center">
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="tender_dropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <span class="small">Transactions</span><br>
-                & Tenders
-              </a>
-              <div class="dropdown-menu" aria-labelledby="tender_dropdown">
-                <a class="dropdown-item" href="{{ url_for('merchant.tenders') }}">All</a>
-                <a class="dropdown-item" href="{{ url_for('merchant.requests') }}">Requested</a>
-                <a class="dropdown-item" href="#">Transactions</a>
-              </div>
-            </li>
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="profile_dropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <span class="small">Hey</span><br>
-                {{ current_user.name }}
-              </a>
-              <div class="dropdown-menu" aria-labelledby="profile_dropdown">
-                <a class="dropdown-item" href="#">Your Profile</a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="{{ url_for('merchant.logout') }}">Sign Out</a>
-              </div>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('merchant.drafts') }}">
-                <i class="fa fa-shopping-cart" style="font-size: 34px;"></i>
-                Drafts
-              </a>
-            </li>
-          </ul>
-        </div>
-      </nav>
+      <a class="navbar-brand" href="{{ url_for('merchant.merchant_home') }}">
+        <img src="{{ url_for('static', filename='Tamani Logo.png') }}" style="height:70px">
+      </a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ml-auto mr-5 align-items-center">
+          
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="profile_dropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <span class="small">Hey,</span>
+              {{ current_user.name }}
+            </a>
+            <div class="dropdown-menu" aria-labelledby="profile_dropdown">
+              <a class="dropdown-item" href="{{ url_for('merchant.profile') }}">Your Profile</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="{{ url_for('merchant.logout') }}">Sign Out</a>
+            </div>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="tender_dropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Tenders
+            </a>
+            <div class="dropdown-menu" aria-labelledby="tender_dropdown">
+              <a class="dropdown-item" href="{{ url_for('merchant.tenders') }}">All</a>
+              <a class="dropdown-item" href="{{ url_for('merchant.requests') }}">Requested</a>
+            </div>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('merchant.drafts') }}">
+              <i class="fa fa-shopping-cart" style="font-size: 34px;"></i>
+              Drafts
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
     {% block content%}
     {% endblock %}
 </body>

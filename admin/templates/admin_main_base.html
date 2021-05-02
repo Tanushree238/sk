@@ -39,6 +39,7 @@
         #mySidenav {
             height: 100vh;
             width: 260px;
+            position:fixed;
             top: 0;
             left: 0;
             background-color: #525252;
@@ -59,7 +60,7 @@
         .sidenav a,
         .sidenav a:hover {
             text-decoration: none;
-            font-size: 16px;
+            font-size: 20px;
             color: #fff;
             display: block;
             transition: 0.3s;
@@ -77,6 +78,9 @@
             display: block;
             font-size: 13px;
             font-family: "Poppins"
+        }
+        .main_block{
+            margin-left: 300px;
         }
     </style>
 
@@ -102,7 +106,7 @@
             <div class="">
                 <div id="mySidenav" class="sidenav">
                     <h2><img src="{{ url_for('static', filename='Tamani Logo.png') }}"></h2>
-                    <h5 class="px-2 mt-5 mb-3"><i class="fa fa-user-o pr-2 user_icon" aria-hidden="true">&nbsp;{{ current_user.name }}</i></h5>
+                    <h5 class="px-2 my-4" style="font-size: 28px;"><i class="fa fa-user-o pr-2 user_icon" aria-hidden="true">&nbsp;{{ current_user.name }}</i></h5>
                     <a href="{{ url_for('admin.dashboard') }}"><i class="fa fa-desktop pr-2" aria-hidden="true"></i>Dashboard</a>
                     
                     <div class="dropdown-divider"></div>
@@ -127,7 +131,7 @@
                     <a href="{{ url_for('admin.logout') }}"><i class="fa fa-power-off pr-2" aria-hidden="true"></i>Logout</a>
                 </div>
             </div>
-            <div class="w-100">
+            <div class=" main_block w-100">
                 {% block content %}
                 {% endblock %}
             </div>

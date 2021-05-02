@@ -1,13 +1,72 @@
-{% extends "admin_main_base.html" %}
+{% extends 'admin_main_base.html' %}
 
 {% block css %}
+<style>
+    .product_card{
+        width: 250px;
+    }
+    .product_img{
+        height: 180px;
+        width: 160px;
+    }
+    .product_name{
+        font-size: 15px;
+    }
+</style>
 {% endblock %}
-
-{% block content %}
-<div class="container">
-    <h1>Welcome to Dashboard</h1>
+{% block content%}
+<div>
+    <span id="merchant_home_url" class="d-none">{{url_for('admin.dashboard', category_id=0 )}}</span>
+    <div class="d-flex justify-content-end px-5">
+        <select class="form-control shadow border-0 my-3 mx-4 col-md-3" id="category">
+            <option value="0">--All Categories--</option>
+            {% for category in categories %}
+                {% if category.id == selected_category %}
+                    <option value="{{category.id}}" selected>{{category.name}}</option>
+                {% else %}
+                    <option value="{{category.id}}">{{category.name}}</option>
+                {% endif %}
+            {% endfor %}
+        </select>
+    </div>
+    <div class="d-flex flex-wrap px-4 justify-content-around">
+        {% for product in products %}
+        <div class="product_card shadow p-4 mx-2 my-3">
+            <div class=" text-center">
+            <img src="{{ url_for('static', filename='product_images/'+product.image) }}" class=" product_img">
+            </div>
+            {% if len(product.name) > 50 %}
+                <p class="product_name pt-2 mb-0" title="{{product.name }}">{{product.name[:50] }}...</p>
+            {% else %}
+                <p class="product_name pt-2 mb-0">{{product.name }}</p>
+            {% endif %}
+            {% if product.specifications %}
+            <p class="small text-muted mb-2">{{product.specifications}}</p>
+            {% endif %}
+            <h5><b>₹{{product.marked_retail_price}}</b></h5>
+            <div class="d-flex justify-content-between">
+                <div>
+                    {% if product.rating %}
+                    <span class="bg-success small text-light px-2 py-1 rounded">
+                        {{product.rating}} <i class="fa fa-star small"></i>
+                    </span>
+                    {% endif %}
+                </div>
+                <!-- <p>Stock Quantity - {{product.stock_quantity}}</p> -->
+            </div>
+            
+        </div>
+        {% endfor %}
+    </div>
 </div>
 {% endblock %}
-
 {% block js %}
+<script>
+    $(document).ready(function(){
+        $("#category").on("change", function(){
+            let location = $("#merchant_home_url").text().split("0")[0]+$(this).val();
+            window.location.href = location; 
+        });
+    })
+</script>
 {% endblock %}

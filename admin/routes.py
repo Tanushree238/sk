@@ -27,7 +27,17 @@ def login():
 @login_required
 @check_role("Admin")
 def dashboard():
-	return render_template("dashboard.html")
+	try :
+		category = int(request.args['category_id'])
+		if int(category):
+			products = Product.query.filter_by(category_id=int(category)).all()
+		else:
+			products = Product.query.all()
+	except :
+		category = None
+		products = Product.query.all()
+	categories = ProductCategory.query.all()
+	return render_template("dashboard.html", categories=categories, products=products, selected_category=category, len=len )
 
 @admin.route("/validate_email", methods=["POST"], endpoint="validate_email")
 @login_required

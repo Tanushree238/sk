@@ -1,3 +1,3 @@
 from flask import Blueprint
 
-delivery = Blueprint("delivery", __name__, url_prefix='/delivery')
+delivery = Blueprint("delivery", __name__, url_prefix='/delivery', template_folder="templates", static_folder="static")

@@ -1,0 +1,33 @@
+{% extends 'merchant_base.html' %}
+
+{% block css %}
+
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-around align-items-center py-4" style="height: 70vh;">
+    <div class="col-md-7 border p-4 shadow-sm rounded">
+        <h2>{{ current_user.name }}</h2>
+        <div class="d-flex">
+            <div class="col-md-8">
+                <p class="pt-3">Company Details</p>
+                <h6 class="text-muted">Name - {{ current_user.merchants.first().name }}</h6>
+                <h6 class="text-muted">GST Number - {{ current_user.merchants.first().gst_number }}</h6>
+                <h6 class="text-muted">Address - {{ current_user.merchants.first().address }}, 
+                    {{ current_user.merchants.first().city }}, 
+                    {{ current_user.merchants.first().state }}, 
+                    {{ current_user.merchants.first().pin_code }}
+                </h6>
+            </div>
+            <div class="col-md-4">
+                <p class="pt-3">Contact Details</p>
+                <h6 class="text-muted"><i class="fa fa-phone"></i> - {{current_user.contact}}</h6>
+                <h6 class="text-muted"><i class="fa fa-envelope"></i> - {{current_user.email}}</h6>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+{% endblock %}

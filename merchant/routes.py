@@ -47,7 +47,25 @@ def dashboard():
 @login_required
 @check_role(role_name)
 def merchant_home():
-	return render_template("merchant_dashboard.html")
+	try :
+		category = int(request.args['category_id'])
+		if int(category):
+			products = Product.query.filter_by(category_id=int(category)).all()
+		else:
+			products = Product.query.all()
+	except :
+		category = None
+		products = Product.query.all()
+	categories = ProductCategory.query.all()
+	
+	return render_template("merchant_dashboard.html", categories=categories, products=products, selected_category=(category))
+
+
+@merchant.route('/profile', methods=["GET"], endpoint="profile")
+@login_required
+@check_role(role_name)
+def profile():
+	return render_template("merchant_profile.html")
 
 
 @merchant.route('/tender_drafts', methods=["GET", "POST"], endpoint="drafts")
