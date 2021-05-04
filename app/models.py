@@ -194,7 +194,7 @@ class TenderStatusLogs(db.Model):
 	status_updated_on = db.Column( db.DateTime, default = datetime.now )
 	updated_by = db.Column( db.Integer, db.ForeignKey('user.id') )
 
-	created_on = db.Column( db.DateTime, default=datetime.now )
+	created_on = db.Column( db.DateTime, default=datetime.now  )
 	updated_on = db.Column( db.DateTime, onupdate = datetime.now )
 
 class TenderPickupStatusLogs(db.Model):

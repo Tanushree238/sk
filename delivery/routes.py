@@ -11,7 +11,7 @@ from app.utility import generate_random_password
 @login_required
 @check_role(role_name)
 def logout():
-	logout_user()
+	logout_user() 
 	return redirect(url_for('delivery.login'))
 
 

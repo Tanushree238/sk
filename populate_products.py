@@ -1,6 +1,5 @@
 import csv
 import os
-import os
 from app.models import *
 
 csv_list = []
@@ -14,6 +13,7 @@ for filename in os.listdir(directory):
 		csv_list.append(filename)
 csv_list.sort()
 dir_list.sort()
+
 
 count = 0
 products_data = {}
@@ -38,11 +38,13 @@ for i in range(count):
 						"specifications" : spec,
 						"rating" : rating,
 						"image" : dir_list[i]+ image
-					}
+					} x
 					prod_list.append(prod)
 	products_data[csv_list[i]]=prod_list
 	count += len(prod_list)
 	print(csv_list[i], count)
+
+ 
 for category, products in products_data.items():
 	category_name = category.split(".csv")[0]
 	category_obj = ProductCategory.query.filter_by(name=category_name).first()
@@ -57,7 +59,7 @@ for category, products in products_data.items():
 			with open("app/static/product_images/"+product["name"]+".jpg", "wb") as out_file:
 				with open(product["image"], "rb") as in_file:
 					out_file.write(in_file.read())
-			price = int("".join(product["price"].split(",")))
+			price = int("".join(product["price"].split(",")))ss
 			product_obj = Product(
 				name = product["name"],
 				marked_retail_price = price,

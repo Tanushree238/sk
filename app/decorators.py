@@ -10,8 +10,15 @@ def check_role(role):
 				if role in current_user.get_roles():
 					return function(*args,**kwargs)
 				else:
-					flash('Permission Denied', "danger")
-					return redirect(url_for(".dashboard"))
+					if role =="Merchant":
+						flash('Permission Denied', "danger")
+						if "Admin" in current_user.get_roles():
+							return redirect(url_for("admin.login"))
+						elif "Delivery" in current_user.get_roles():
+							return redirect(url_for("delivery.login"))
+					else:
+						flash('Permission Denied', "danger")
+						return redirect(url_for(".dashboard"))
 			return redirect(url_for(".login"))
 
 		return check
