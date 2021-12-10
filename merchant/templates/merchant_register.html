@@ -1,0 +1,30 @@
+{% extends 'merchant_login_base.html' %}
+
+{% block content%}
+<div class="d-flex flex-column pt-5 mt-5 align-items-center">
+    <h2>Create Merchant Account</h2>
+    <form action="" class="col-md-3" method="POST">
+        <label>Your Name</label>
+        <input type="text" name="name" id="name" class="form-control mb-3">
+        <label>Mobile Number</label>
+        <input type="text" name="contact" id="contact" class="form-control mb-3">
+        <label>Email</label>
+        <input type="text" name="email" id="email" class="form-control mb-3">
+        <label>Password</label>
+        <input type="password" name="password" id="password" class="form-control mb-2">
+        <button type="submit" id="submit_btn" class="btn btn-success btn-block mb-3" style="font-size: 17px;">Continue</button>
+    </form>
+    <div class="col-md-3 row">
+        <div class="col-md-3 px-0 py-1">
+            <hr class="mx-0 my-2">
+        </div>
+        <div class="col-md-6 px-0 text-center">
+            <span class="small text-muted">Already have an account ?</span>
+        </div>
+        <div class="col-md-3 px-0 py-1">
+            <hr class="mx-0 my-2">
+        </div>
+        <a href="{{ url_for('merchant.login') }}" class="btn btn-outline-dark btn-sm btn-block my-3" style="font-size: 17px;">Sign In</a>
+    </div>
+</div>
+{% endblock %}

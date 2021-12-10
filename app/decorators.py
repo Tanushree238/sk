@@ -16,6 +16,8 @@ def check_role(role):
 							return redirect(url_for("admin.login"))
 						elif "Delivery" in current_user.get_roles():
 							return redirect(url_for("delivery.login"))
+						elif "User" in current_user.get_roles():
+							return redirect(url_for(".login"))
 					else:
 						flash('Permission Denied', "danger")
 						return redirect(url_for(".dashboard"))

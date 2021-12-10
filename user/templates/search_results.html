@@ -1,0 +1,49 @@
+{% extends 'user_base.html' %}
+
+{% block css %}
+<style>
+    .product_img{
+        height: 160px;
+        width: 140px;
+    }
+    .product_name{
+        font-size: 15px;
+    }
+    .col-md-3{
+        flex:0 0 20%;
+        max-width: 20% !important;
+    }
+</style>
+{% endblock %}
+{% block content%}
+<div>
+    <div class="d-flex flex-wrap px-4 justify-content-around">
+        {% for product in results %}
+        <div class="col-md-2 shadow px-3 py-3 mx-4 my-3">
+            <div class=" text-center">
+            <img src="{{ url_for('static', filename='product_images/'+product.image) }}" class=" product_img">
+            </div>
+            {% if len(product.name) > 50 %}
+                <p class="product_name pt-2 mb-0" title="{{product.name}}">{{product.name[:50]}}...</p>
+            {% else %}
+                <p class="product_name pt-2 mb-0" title="{{product.name}}">{{product.name}}</p>
+            {% endif %}
+            {% if product.specifications %}
+            <p class="small text-muted mb-2">{{product.specifications}}</p>
+            {% endif %}
+            <div class="d-flex justify-content-between">
+                <h5><b>₹{{product.marked_retail_price}}</b></h5>
+                <div>
+                    {% if product.rating %}
+                    <span class="bg-primary small text-light px-2 py-1 rounded">
+                        {{product.rating}} <i class="fa fa-star small"></i>
+                    </span>
+                    {% endif %}
+                </div>
+            </div>
+            <button class="btn btn-success">Add to cart</button>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

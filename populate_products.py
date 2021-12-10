@@ -17,8 +17,8 @@ dir_list.sort()
 
 count = 0
 products_data = {}
-count = len(csv_list)
-for i in range(count):
+count1 = len(csv_list)
+for i in range(count1):
 	images = set()
 	for image in  os.listdir(dir_list[i]):
 		images.add(image)
@@ -38,11 +38,12 @@ for i in range(count):
 						"specifications" : spec,
 						"rating" : rating,
 						"image" : dir_list[i]+ image
-					} x
+					} 
 					prod_list.append(prod)
 	products_data[csv_list[i]]=prod_list
 	count += len(prod_list)
-	print(csv_list[i], count)
+	print(csv_list[i], len(prod_list))
+print(len(products_data), count)
 
  
 for category, products in products_data.items():
@@ -59,7 +60,7 @@ for category, products in products_data.items():
 			with open("app/static/product_images/"+product["name"]+".jpg", "wb") as out_file:
 				with open(product["image"], "rb") as in_file:
 					out_file.write(in_file.read())
-			price = int("".join(product["price"].split(",")))ss
+			price = int("".join(product["price"].split(",")))
 			product_obj = Product(
 				name = product["name"],
 				marked_retail_price = price,
@@ -71,4 +72,4 @@ for category, products in products_data.items():
 			)
 			db.session.add(product_obj)
 			db.session.commit()
-			print("{} product obj created".format(product["name"]))	  
+			print("{} product obj created".format(product["name"]))	 

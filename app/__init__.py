@@ -14,8 +14,9 @@ login_manager = LoginManager(app)
 login_manager.login_view = "login"
 login_manager.blueprint_login_views = {
     "admin": "admin.login",
-    "merchant": "login",
+    "merchant": "merchant.login",
     "delivery": "delivery.login",
+    "user": "login"
 }
 
 login_manager.login_message_category = 'info'
@@ -24,7 +25,9 @@ from app import routes, models
 from admin import admin
 from merchant import merchant
 from delivery import delivery
+from user import user
 
 app.register_blueprint(admin)
 app.register_blueprint(merchant)
+app.register_blueprint(user)
 app.register_blueprint(delivery)
